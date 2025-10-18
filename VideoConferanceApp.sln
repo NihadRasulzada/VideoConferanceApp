@@ -3,7 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36511.14 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoConferanceApp.Shared", "VideoConferanceApp.Shared\VideoConferanceApp.Shared.csproj", "{6C3D008E-9268-40D8-93DC-DD0627B95182}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoConferanceApp.Server", "VideoConferanceApp.Server\VideoConferanceApp.Server.csproj", "{35ED8968-910F-471A-9868-CC74583E078B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoConferanceApp.Client", "VideoConferanceApp.Client\VideoConferanceApp.Client.csproj", "{B0A180FA-C0AD-4A2F-9B4A-C011CA031270}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C3D008E-9268-40D8-93DC-DD0627B95182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C3D008E-9268-40D8-93DC-DD0627B95182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C3D008E-9268-40D8-93DC-DD0627B95182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C3D008E-9268-40D8-93DC-DD0627B95182}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35ED8968-910F-471A-9868-CC74583E078B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35ED8968-910F-471A-9868-CC74583E078B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35ED8968-910F-471A-9868-CC74583E078B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35ED8968-910F-471A-9868-CC74583E078B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0A180FA-C0AD-4A2F-9B4A-C011CA031270}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0A180FA-C0AD-4A2F-9B4A-C011CA031270}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0A180FA-C0AD-4A2F-9B4A-C011CA031270}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0A180FA-C0AD-4A2F-9B4A-C011CA031270}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
