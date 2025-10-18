@@ -1,0 +1,95 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@using NetcodeHub.Packages.Components.Modal
+@using NetcodeHub.Packages.Components.ScreenLoader
+@using VideoConferanceApp.Shared.Authentication.Requests
+@using VideoConferanceApp.Shared.Authentication.Responces
+
+<div class="mt-5">
+    <EditForm Model="Login" OnValidSubmit="HandleLogin">
+        <FluentCard Class="bg-primary-subtle" Width="300px">
+            <FluentLabel Typo="Typography.Header" Class="mb-3">Kindly Login</FluentLabel>
+            <hr />
+            <FluentTextField @bind-Value="Login.Email"
+                             Label="Email Address"
+                             Maxlength="100"
+                             Class="mb-3"
+                             TextFieldType="TextFieldType.Email"
+                             Style="width: 250px" />
+
+            <FluentTextField @bind-Value="Login.Password"
+                             Label="Password"
+                             Maxlength="100"
+                             Class="mb-3"
+                             TextFieldType="TextFieldType.Password"
+                             Style="width: 250px" />
+            <br />
+            <hr />
+            <FluentButton Appearance="Appearance.Accent"
+                          Type="ButtonType.Submit">Login</FluentButton>
+
+        </FluentCard>
+    </EditForm>
+</div>
+
+<NetcodeHubScreenLoader Show="@ShowLoader" />
+<NetcodeHubModal @bind-Open="IsModalMessageOpen"
+                 BootstrapClass="border-info rounded p-2 ml-2 mr-2"
+                 CustomStyle="min-width: 400px; max-width:500px;">
+    <ContentTemplate>
+        <div class="card">
+            <div class="card-header">Notification!</div>
+            <div class="card-body">
+                <div class="alert alert-info text-center">@Message</div>
+                <button class="btn btn-info" @onclick="Ok">Ok</button>
+            </div>
+        </div>
+    </ContentTemplate>
+</NetcodeHubModal>
+
+@code {
+    [CascadingParameter] public Task<AuthenticationState>? AuthState { get; set; }
+    bool ShowLoader = false;
+    bool IsModalMessageOpen = false;
+    LoginUserRequest Login = new();
+    string Message = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            bool isUserAuthenticated = (await AuthState!).User.Identity!.IsAuthenticated;
+            if (isUserAuthenticated)
+            {
+                NavManager.NavigateTo("/dashboard");
+            }
+        }
+        catch { }
+    }
+
+    async Task HandleLogin()
+    {
+        ShowLoader = true;
+        await Task.Delay(500);
+        LoginUserResponse? response = await authService.Login(Login)!;
+        if (response!.IsSuccess)
+        {
+            string token = response!.JwtToken;
+            await AuthStateProvider.SetUserAuthenticated(token);
+            NavManager.NavigateTo("/dashboard");
+            return;
+        }
+
+        ShowLoader = false;
+        Message = response!.Message!;
+        IsModalMessageOpen = true;
+        StateHasChanged();
+    }
+
+    void Ok()
+    {
+        IsModalMessageOpen = false;
+        StateHasChanged();
+    }
+}
