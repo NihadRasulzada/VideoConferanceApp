@@ -1,0 +1,57 @@
+﻿@page "/join-meeting/{MeetingId}/{Passcode}"
+@using System.ComponentModel.DataAnnotations
+@using VideoConferanceApp.Shared.Meeting.Responses
+@layout AttendeeLayout
+
+@code{
+    int PageOpacity = 0;
+    bool IsModalOpen = false;
+    bool ShowLoader = false;
+    bool IsModalMessageOpen = false;
+    string Message = string.Empty;
+    const string ContainerId = "client-video-container";
+
+    Profile ConnectProfile = new();
+
+    [Parameter] public string MeetingId { get; set; } = string.Empty;
+    [Parameter] public string MeetingPasscode { get; set; } = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        if(string.IsNullOrEmpty(MeetingId) || string.IsNullOrEmpty(MeetingPasscode))
+        {
+            Message = "Unable to connnect to server: invalid meeting credentials provided";
+            IsModalMessageOpen = true;
+            return;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsModalOpen = true;
+
+        TwilioServiceResponse response = await TwilioServiceResponse.GenerateMeetingToken(ConnectProfile.Name, MeetingId)!;
+
+        if (!response!.IsSuccess)
+        {
+            Message = response.Message!;
+            ShowLoader = false;
+            IsModalMessageOpen = true;
+            IsModalOpen = false;
+            return;
+        }
+
+        await twilioService.JoinMeeting(token: response.Data!, roomName: MeetingId, containerId: ContainerId);
+
+        PageOpacity = 1;
+        ShowLoader = false;
+    }
+
+    void Ok() => IsModalMessageOpen = false;
+
+    public class Profile
+    {
+        [Required]
+        public string Name { get; set; } = string.Empty;
+    }
+}
