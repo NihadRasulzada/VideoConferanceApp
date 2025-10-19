@@ -6,17 +6,17 @@
                  Class="p-2 fw-bold fs-3 text-info"
                  Style="font-family:Algerian">VCF</FluentLabel>
     <FluentSpacer />
-    <FluentAppBarItem Href="#"
+    <FluentAppBarItem Href="/"
                       Match="NavLinkMatch.All"
                       IconRest="LoginIcon()"
                       IconActive="LoginIcon(active: true)"
                       Text="Login"
-                      OnClick="HandleOnLoginClick" />
+                      @* OnClick="HandleOnLoginClick" *@ />
     <FluentAppBarItem Href="/register"
                       IconRest="RegisterIcon()"
                       IconActive="RegisterIcon(active: true)"
                       Text="Register"
-                      OnClick="HandleOnRegisterClick"
+                      @* OnClick="HandleOnRegisterClick" *@
                       Match="NavLinkMatch.All" />
 </FluentAppBar>
 
@@ -29,9 +29,9 @@
             active ? new Icons.Filled.Size24.PersonAdd()
                : new Icons.Regular.Size24.PersonAdd();
 
-    private void HandleOnLoginClick(IAppBarItem item) =>
-            NavManager.NavigateTo("/login");    
+    // private void HandleOnLoginClick(IAppBarItem item) =>
+    //         NavManager.NavigateTo("/login");    
 
-    private void HandleOnRegisterClick(IAppBarItem item) =>
-            NavManager.NavigateTo("/register"); 
+    // private void HandleOnRegisterClick(IAppBarItem item) =>
+    //         NavManager.NavigateTo("/register"); 
 }
