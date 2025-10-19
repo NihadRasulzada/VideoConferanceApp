@@ -1,0 +1,41 @@
+﻿@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@using Microsoft.FluentUI.AspNetCore.Components
+@using VideoConferanceApp.Client.States
+
+<FluentAppBar Orientation="Orientation.Vertical"
+              Style="height: 100vh;"
+              Class="smallicons bg-primary-subtle">
+    <FluentAppBarItem Href="/dashboard"
+                      Match="NavLinkMatch.All"
+                      IconRest="HomeIcon()"
+                      IconActive="HomeIcon(active: true)"
+                      Text="Home" />
+    <FluentAppBarItem OnClick="ScheduleMeetingBtnClick"
+                      Match="NavLinkMatch.All"
+                      IconRest="MeetingIcon()"
+                      IconActive="MeetingIcon(active: true)"
+                      Text="Schedule" />
+    <FluentSpacer />
+    <FluentAppBarItem Href="/logout"
+                      IconRest="LogoutIcon()"
+                      IconActive="LogoutIcon(active: true)"
+                      Text="Logout" />
+
+</FluentAppBar>
+
+@code {
+    private static Icon HomeIcon(bool active = false) =>
+        active ? new Icons.Filled.Size24.Home()
+               : new Icons.Regular.Size24.Home();
+
+    private static Icon MeetingIcon(bool active = false) =>
+            active ? new Icons.Filled.Size24.MeetNow()
+               : new Icons.Regular.Size24.MeetNow();
+
+    private static Icon LogoutIcon(bool active = false) =>
+            active ? new Icons.Filled.Size24.SignOut()
+               : new Icons.Regular.Size24.SignOut();
+
+    [Inject] NavState? navState { get; set; }
+    void ScheduleMeetingBtnClicked() => navState!.ClickButton();
+}
