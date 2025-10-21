@@ -11,32 +11,25 @@
         <FluentCard Class="bg-primary-subtle" Width="300px">
             <FluentLabel Typo="Typography.Header" Class="mb-3">Kindly Login</FluentLabel>
             <hr />
-            <FluentTextField @bind-Value="Login.Email"
-                             Label="Email Address"
-                             Maxlength="100"
-                             Class="mb-3"
-                             TextFieldType="TextFieldType.Email"
-                             Style="width: 250px" />
+            <DataAnnotationsValidator />
+            <FluentTextField @bind-Value="Login.Email" Label="Email Address" Maxlength="100" Class="mb-3"
+                TextFieldType="TextFieldType.Email" Style="width: 250px" />
+            <ValidationMessage For="() => Login.Email" />
 
-            <FluentTextField @bind-Value="Login.Password"
-                             Label="Password"
-                             Maxlength="100"
-                             Class="mb-3"
-                             TextFieldType="TextFieldType.Password"
-                             Style="width: 250px" />
+            <FluentTextField @bind-Value="Login.Password" Label="Password" Maxlength="100" Class="mb-3"
+                TextFieldType="TextFieldType.Password" Style="width: 250px" />
+            <ValidationMessage For="() => Login.Password" />
             <br />
             <hr />
-            <FluentButton Appearance="Appearance.Accent"
-                          Type="ButtonType.Submit">Login</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" Type="ButtonType.Submit">Login</FluentButton>
 
         </FluentCard>
     </EditForm>
 </div>
 
 <NetcodeHubScreenLoader Show="@ShowLoader" />
-<NetcodeHubModal @bind-Open="IsModalMessageOpen"
-                 BootstrapClass="border-info rounded p-2 ml-2 mr-2"
-                 CustomStyle="min-width: 400px; max-width:500px;">
+<NetcodeHubModal @bind-Open="IsModalMessageOpen" BootstrapClass="border-info rounded p-2 ml-2 mr-2"
+    CustomStyle="min-width: 400px; max-width:500px;">
     <ContentTemplate>
         <div class="card">
             <div class="card-header">Notification!</div>
