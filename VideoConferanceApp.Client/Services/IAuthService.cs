@@ -15,14 +15,28 @@ namespace VideoConferanceApp.Client.Services
     {
         public async Task<CreateUserResponse?> CreateUserAccount(CreateUserRequest user)
         {
-            var result = await httpExtension.GetPublicClient().PostAsJsonAsync("auth/create", user);
-            return await result.Content.ReadFromJsonAsync<CreateUserResponse>();
+            try
+            {
+                var result = await httpExtension.GetPublicClient().PostAsJsonAsync("auth/create", user);
+                return await result.Content.ReadFromJsonAsync<CreateUserResponse>();
+            }
+            catch
+            {
+                return new CreateUserResponse { IsSuccess = false, Message = "Error connecting to server" };
+            }
         }
 
         public async Task<LoginUserResponse?> Login(LoginUserRequest user)
         {
-            var result = await httpExtension.GetPublicClient().PostAsJsonAsync("auth/login", user);
-            return await result.Content.ReadFromJsonAsync<LoginUserResponse>();
+            try
+            {
+                var result = await httpExtension.GetPublicClient().PostAsJsonAsync("auth/login", user);
+                return await result.Content.ReadFromJsonAsync<LoginUserResponse>();
+            }
+            catch
+            {
+                return new LoginUserResponse(null!) { IsSuccess = false, Message = "Error connecting to server" };
+            }
         }
     }
 }

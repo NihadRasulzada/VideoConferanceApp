@@ -17,8 +17,7 @@
         @* Curret Meeting *@
         <div class="col-lg-12 mb-3">
             <FluentCard Class="fluentcard">
-                <FluentLabel Typo="Typography.PaneHeader"
-                             Class="mb-2">
+                <FluentLabel Typo="Typography.PaneHeader" Class="mb-2">
                     <FluentIcon Value="@(new Icons.Regular.Size24.Record())" />
                     Upcoming Meetings
                 </FluentLabel>
@@ -30,35 +29,38 @@
                         <div class="card">
                             <div class="card-header">@meeting.Title</div>
                             <p>
-                                <div class="row">
-                                    <div class="col-lg-7">
-                                        <ul class="list-group">
-                                            <li class="list-group-item">ID: @meeting.MeetingId</li>
-                                            <li class="list-group-item">Password: @meeting.Passcode</li>
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">ID: @meeting.MeetingId</li>
+                                        <li class="list-group-item">Password: @meeting.Passcode</li>
 
-                                            <li class="list-group-item">
-                                                Date and Time
-                                                <ul class="list-group">
-                                                    <li style="padding-left: 3rem; list-style: none">Start: @meeting.StartDateOnly @meeting.StartTimeOnly</li>
-                                                    <li style="padding-left: 3rem; list-style: none">End: @meeting.EndDateOnly @meeting.EndTimeOnly</li>
-                                                </ul>
-                                            </li>
-                                            <li class="list-group-item text-primary">
-                                                Link:
-                                                <a href="@meeting.Link">@meeting.Link</a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-lg-5">
-                                        <h5>Meeting Description</h5>
-                                        <p>@meeting.Description</p>
-
-                                        <button class="btn btn-danger btn-lg btn-block" @onclick="() => StartMeeting(meeting.MeetingId)">
-                                            <FluentIcon Value="@(new Icons.Regular.Size24.Power())" />
-                                            Start Meeting
-                                        </button>
-                                    </div>
+                                        <li class="list-group-item">
+                                            Date and Time
+                                            <ul class="list-group">
+                                                <li style="padding-left: 3rem; list-style: none">Start: @meeting.StartDateOnly
+                                                    @meeting.StartTimeOnly</li>
+                                                <li style="padding-left: 3rem; list-style: none">End: @meeting.EndDateOnly
+                                                    @meeting.EndTimeOnly</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item text-primary">
+                                            Link:
+                                            <a href="@meeting.Link">@meeting.Link</a>
+                                        </li>
+                                    </ul>
                                 </div>
+                                <div class="col-lg-5">
+                                    <h5>Meeting Description</h5>
+                                    <p>@meeting.Description</p>
+
+                                    <button class="btn btn-danger btn-lg btn-block"
+                                        @onclick="() => StartMeeting(meeting.MeetingId)">
+                                        <FluentIcon Value="@(new Icons.Regular.Size24.Power())" />
+                                        Start Meeting
+                                    </button>
+                                </div>
+                            </div>
                             </p>
                         </div>
                     }
@@ -73,8 +75,7 @@
         @* Recent Meetings *@
         <div class="col-lg-12">
             <FluentCard Class="fluentcard">
-                <FluentLabel Typo="Typography.PaneHeader"
-                             Class="mb-2">
+                <FluentLabel Typo="Typography.PaneHeader" Class="mb-2">
                     <FluentIcon Value="@(new Icons.Regular.Size24.AppRecent())" />
                     Recent Meetings
                 </FluentLabel>
@@ -86,32 +87,34 @@
                         <div class="card">
                             <div class="card-header">@meeting.Title</div>
                             <p>
-                                <div class="row">
-                                    <div class="col-lg-7">
-                                        <ul class="list-group">
-                                            <li class="list-group-item">ID: @meeting.MeetingId</li>
-                                            <li class="list-group-item">Password: @meeting.Passcode</li>
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">ID: @meeting.MeetingId</li>
+                                        <li class="list-group-item">Password: @meeting.Passcode</li>
 
-                                            <li class="list-group-item">
-                                                Date and Time
-                                                <ul class="list-group">
-                                                    <li style="padding-left: 3rem; list-style: none">Start: @meeting.StartDateOnly @meeting.StartTimeOnly</li>
-                                                    <li style="padding-left: 3rem; list-style: none">End: @meeting.EndDateOnly @meeting.EndTimeOnly</li>
-                                                </ul>
-                                            </li>
-                                            <li class="list-group-item text-primary">
-                                                Link:
-                                                <a href="@meeting.Link">
-                                                    @meeting.Link
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-lg-5">
-                                        <h5>Meeting Description</h5>
-                                        <p>@meeting.Description</p>
-                                    </div>
+                                        <li class="list-group-item">
+                                            Date and Time
+                                            <ul class="list-group">
+                                                <li style="padding-left: 3rem; list-style: none">Start: @meeting.StartDateOnly
+                                                    @meeting.StartTimeOnly</li>
+                                                <li style="padding-left: 3rem; list-style: none">End: @meeting.EndDateOnly
+                                                    @meeting.EndTimeOnly</li>
+                                            </ul>
+                                        </li>
+                                        <li class="list-group-item text-primary">
+                                            Link:
+                                            <a href="@meeting.Link">
+                                                @meeting.Link
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
+                                <div class="col-lg-5">
+                                    <h5>Meeting Description</h5>
+                                    <p>@meeting.Description</p>
+                                </div>
+                            </div>
                             </p>
                         </div>
                     }
@@ -126,52 +129,35 @@
     </div>
 </div>
 
-<NetcodeHubModal @bind-Open="IsMeetingModalOpen"
-                 BootstrapClass="border-success rounded p-2 ml-2 mr-2"
-                 CustomStyle="min-width: 400px; max-width: 500px">
+<NetcodeHubModal @bind-Open="IsMeetingModalOpen" BootstrapClass="border-success rounded p-2 ml-2 mr-2"
+    CustomStyle="min-width: 400px; max-width: 500px">
     <ContentTemplate>
         <div class="card">
             <div class="card-header">Schedule Meeting</div>
             <div class="card-body">
                 <EditForm Model="Meeting" OnValidSubmit="SubmitMeeting">
-                    <FluentTextField @bind-Value=Meeting.Title
-                                     Label="Title"
-                                     Maxlength="1000"
-                                     Class="mb-3"
-                                     TextFieldType="TextFieldType.Text"
-                                     Style="width: 400px;"
-                                     Autofocus=true />
+                    <FluentTextField @bind-Value=Meeting.Title Label="Title" Maxlength="1000" Class="mb-3"
+                        TextFieldType="TextFieldType.Text" Style="width: 400px;" Autofocus=true />
                     <div class="vstack gap-3">
                         <h4>Date and Time</h4>
                         <div class="vstack gap-3">
                             <h5 class="text-muted">Start</h5>
                             <div class="hstack gap-2 mb-3">
-                                <FluentDatePicker Label="Date"
-                                                  @bind-Value="Meeting.StartDate"
-                                                  Class="mb-2" />
-                                <FluentTimePicker @bind-Value="Meeting.StartTime"
-                                                  Label="Time"
-                                                  Class="mb-2" />
+                                <FluentDatePicker Label="Date" @bind-Value="Meeting.StartDate" Class="mb-2" />
+                                <FluentTimePicker @bind-Value="Meeting.StartTime" Label="Time" Class="mb-2" />
                             </div>
                         </div>
                         <div class="vstack gap-3 mb-3">
                             <h5 class="text-muted">End</h5>
                             <div class="hstack gap-2">
-                                <FluentDatePicker Label="Date"
-                                                  @bind-Value="Meeting.EndDate"
-                                                  Class="mb-3" />
+                                <FluentDatePicker Label="Date" @bind-Value="Meeting.EndDate" Class="mb-3" />
 
-                                <FluentDatePicker @bind-Value="Meeting.EndTime"
-                                                  Label="Time"
-                                                  Class="mb-3" />
+                                <FluentDatePicker @bind-Value="Meeting.EndTime" Label="Time" Class="mb-3" />
                             </div>
                         </div>
                     </div>
-                    <FluentTextArea @bind-Value=Meeting.Description
-                                    Style="width: 400px"
-                                    Resize="TextAreaResize.Vertical"
-                                    Placeholder="Description"
-                                    Class="mb-2"></FluentTextArea>
+                    <FluentTextArea @bind-Value=Meeting.Description Style="width: 400px"
+                        Resize="TextAreaResize.Vertical" Placeholder="Description" Class="mb-2"></FluentTextArea>
                     <hr />
 
                     <button class="btn btn-primary" type="submit">
@@ -194,9 +180,8 @@
     </ContentTemplate>
 </NetcodeHubModal>
 
-<NetcodeHubModal @bind-Open="IsModalMessageOpen"
-                 BootstrapClass="border-info rounded p-2 ml-2 mr-2"
-                 CustomStyle="min-width: 400px; max-width:500px;">
+<NetcodeHubModal @bind-Open="IsModalMessageOpen" BootstrapClass="border-info rounded p-2 ml-2 mr-2"
+    CustomStyle="min-width: 400px; max-width:500px;">
     <ContentTemplate>
         <div class="card">
             <div class="card-header">Notification!</div>
@@ -249,7 +234,11 @@
 
     void ScheduleMeeting() => OpenModal();
 
-    void OpenModal() => IsMeetingModalOpen = true;
+    void OpenModal()
+    {
+        IsMeetingModalOpen = true;
+        StateHasChanged();
+    }
 
     void Ok()
     {
@@ -309,7 +298,11 @@
         StateHasChanged();
     }
 
-    void CancelMeetingCreate() => IsMeetingModalOpen = false;
+    void CancelMeetingCreate()
+    {
+        IsMeetingModalOpen = false;
+        StateHasChanged();
+    }
 
     void ResetMeetingForm() => Meeting = new();
 

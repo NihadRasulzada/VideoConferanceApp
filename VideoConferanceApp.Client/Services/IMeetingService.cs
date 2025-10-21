@@ -16,20 +16,41 @@ namespace VideoConferanceApp.Client.Services
     {
         public async Task<CreateMeetingResponse?> CreateMeeting(CreateMeetingRequest meeting)
         {
-            var result = await (await httpExtension.GetPrivateClient()).PostAsJsonAsync("meeting/create", meeting);
-            return await result.Content.ReadFromJsonAsync<CreateMeetingResponse>();
+            try
+            {
+                var result = await (await httpExtension.GetPrivateClient()).PostAsJsonAsync("meeting/create", meeting);
+                return await result.Content.ReadFromJsonAsync<CreateMeetingResponse>();
+            }
+            catch
+            {
+                return new CreateMeetingResponse { IsSuccess = false, Message = "Error connecting to server" };
+            }
         }
 
         public async Task<GetMeetingsResponse?> GetMeetings(string hostId)
         {
-            var result  = await (await httpExtension.GetPrivateClient()).GetAsync($"meeting/{hostId}");
-            return await result.Content.ReadFromJsonAsync<GetMeetingsResponse>();
+            try
+            {
+                var result = await (await httpExtension.GetPrivateClient()).GetAsync($"meeting/{hostId}");
+                return await result.Content.ReadFromJsonAsync<GetMeetingsResponse>();
+            }
+            catch
+            {
+                return new GetMeetingsResponse { IsSuccess = false, Message = "Error connecting to server" };
+            }
         }
 
         public async Task<GetRecentMeetingsResponse?> GetRecentMeetings(string hostId)
         {
-            var result = await (await httpExtension.GetPrivateClient()).GetAsync($"meeting/recent/{hostId}");
-            return await result.Content.ReadFromJsonAsync<GetRecentMeetingsResponse>();
+            try
+            {
+                var result = await (await httpExtension.GetPrivateClient()).GetAsync($"meeting/recent/{hostId}");
+                return await result.Content.ReadFromJsonAsync<GetRecentMeetingsResponse>();
+            }
+            catch
+            {
+                return new GetRecentMeetingsResponse { IsSuccess = false, Message = "Error connecting to server" };
+            }
         }
     }
 }
