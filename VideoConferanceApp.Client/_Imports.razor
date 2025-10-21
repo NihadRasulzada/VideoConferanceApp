@@ -9,5 +9,10 @@
 @using VideoConferanceApp.Client
 @using VideoConferanceApp.Client.Layout
 @using VideoConferanceApp.Client.Services
+@using VideoConferanceApp.Client.States
 @inject NavigationManager NavManager
 @inject IAuthService authService
+@inject IMeetingService meetingService
+@inject ITwilioService twilioService
+@inject CustomAuthStateProvider AuthStateProvider   
+@inject IConfiguration config

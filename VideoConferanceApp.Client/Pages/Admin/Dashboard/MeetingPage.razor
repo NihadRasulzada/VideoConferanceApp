@@ -26,8 +26,8 @@
             {
                 <div class="hstack gap-1">
                     <FluentIcon Value="@(new Icons.Filled.Size20.Mic())"
-                                OnClick="ManageMic"
-                                Style="cursor:pointer" />
+                    OnClick="ManageMic"
+                    Style="cursor:pointer" />
                     <span>On</span>
                 </div>
 
@@ -36,8 +36,8 @@
             {
                 <div class="hstack gap-1">
                     <FluentIcon Value="@(new Icons.Regular.Size20.SpeakerMute())"
-                                OnClick="ManageMic"
-                                Style="cursor:pointer" />
+                    OnClick="ManageMic"
+                    Style="cursor:pointer" />
                     <span>Off</span>
                 </div>
             }
@@ -116,25 +116,25 @@
 
         _hubConnection.On("GetConnectedUsers", async () =>
         {
-            Console.WriteLine("Get Connected User Event fired");
-            GetMeetingMembersResponse? result =
-            await meetingService.GetConnectedMembers(MeetingId);
+       Console.WriteLine("Get Connected User Event fired");
+       GetMeetingMembersResponse? result =
+       await meetingService.GetConnectedMembers(MeetingId);
 
-            // check if opertion was successfull
-            Console.WriteLine(result!.Message);
-            if (!result.IsSuccess)
-            {
-                ConnectedUser = new();
-                return;
-            }
+       // check if opertion was successfull
+       Console.WriteLine(result!.Message);
+       if (!result.IsSuccess)
+       {
+           ConnectedUser = new();
+           return;
+       }
 
-            int index = 1;
-            foreach (var user in result.Data!)
-            {
-                ConnectedUser.Add(index.ToString(), user);
-                index++;
-            }
-            await InvokeAsync(StateHasChanged);
+       int index = 1;
+       foreach (var user in result.Data!)
+       {
+           ConnectedUser.Add(index.ToString(), user);
+           index++;
+       }
+       await InvokeAsync(StateHasChanged);
         });
 
 

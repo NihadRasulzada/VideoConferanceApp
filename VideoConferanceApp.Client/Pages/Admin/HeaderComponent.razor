@@ -2,36 +2,27 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 
 <FluentAppBar Style="height: 100%;" Orientation="Orientation.Horizontal" Class="bg-primary-subtle">
-    <FluentLabel Typo="Typography.Header"
-                 Class="p-2 fw-bold fs-3 text-info"
-                 Style="font-family:Algerian">VCF</FluentLabel>
+    <FluentLabel Typo="Typography.Header" Class="p-2 fw-bold fs-3 text-info" Style="font-family:Algerian"> VCF
+    </FluentLabel>
     <FluentSpacer />
-    <FluentAppBarItem Href="/"
-                      Match="NavLinkMatch.All"
-                      IconRest="LoginIcon()"
-                      IconActive="LoginIcon(active: true)"
-                      Text="Login"
-                      @* OnClick="HandleOnLoginClick" *@ />
-    <FluentAppBarItem Href="/register"
-                      IconRest="RegisterIcon()"
-                      IconActive="RegisterIcon(active: true)"
-                      Text="Register"
-                      @* OnClick="HandleOnRegisterClick" *@
-                      Match="NavLinkMatch.All" />
+    <FluentAppBarItem Href="/" Match="NavLinkMatch.All" IconRest="LoginIcon()" IconActive="LoginIcon(active: true)"
+        Text="Login" />
+    <FluentAppBarItem Href="/register" IconRest="RegisterIcon()" IconActive="RegisterIcon(active: true)" Text="Register"
+        Match="NavLinkMatch.All" />
 </FluentAppBar>
 
 @code {
     private static Icon LoginIcon(bool active = false) =>
-        active ? new Icons.Filled.Size24.PersonAccounts()
-               : new Icons.Regular.Size24.PersonAccounts();
+    active ? new Icons.Filled.Size24.PersonAccounts()
+    : new Icons.Regular.Size24.PersonAccounts();
 
-    private static Icon RegisterIcon(bool active = false) => 
-            active ? new Icons.Filled.Size24.PersonAdd()
-               : new Icons.Regular.Size24.PersonAdd();
+    private static Icon RegisterIcon(bool active = false) =>
+    active ? new Icons.Filled.Size24.PersonAdd()
+    : new Icons.Regular.Size24.PersonAdd();
 
     // private void HandleOnLoginClick(IAppBarItem item) =>
-    //         NavManager.NavigateTo("/login");    
+    // NavManager.NavigateTo("/login");
 
     // private void HandleOnRegisterClick(IAppBarItem item) =>
-    //         NavManager.NavigateTo("/register"); 
+    // NavManager.NavigateTo("/register");
 }
