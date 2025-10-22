@@ -281,3 +281,5 @@ ServiceFabricBackup/
 *.rptproj.rsuser
 *- [Bb]ackup.rdl
 *- [Bb]ackup ([0-9]).rd
+
+.idea/
