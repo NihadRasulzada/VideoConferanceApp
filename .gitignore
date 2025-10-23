@@ -283,3 +283,4 @@ ServiceFabricBackup/
 *- [Bb]ackup ([0-9]).rd
 
 .idea/
+**/appsettings.Development.json
