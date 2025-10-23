@@ -1,16 +1,18 @@
-﻿@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
+﻿@using System.ComponentModel.DataAnnotations
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
 @using NetcodeHub.Packages.Components.Modal
 @using NetcodeHub.Packages.Components.ScreenLoader
-@using VideoConferanceApp.Client.States
-@using VideoConferanceApp.Shared.Meeting.Responses
 @using VideoConferanceApp.Shared.Meeting.Requests
+@using VideoConferanceApp.Shared.Meeting.Responses
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @implements IDisposable
 @layout DashboardLayout
 @attribute [Authorize]
+@page "/dashboard"
 
 <div class="container-fluid" style="background-color: var(--neutral-layer-3); margin-left: -9px; width: 95vw;">
     <div class="row m-3">
@@ -18,7 +20,7 @@
         <div class="col-lg-12 mb-3">
             <FluentCard Class="fluentcard">
                 <FluentLabel Typo="Typography.PaneHeader" Class="mb-2">
-                    <FluentIcon Value="@(new Icons.Regular.Size24.Record())"/>
+                    <FluentIcon Value="@(new Size24.Record())"/>
                     Upcoming Meetings
                 </FluentLabel>
 
@@ -58,7 +60,7 @@
 
                                     <button class="btn btn-danger btn-lg btn-block"
                                             @onclick="() => StartMeeting(meeting.MeetingId)">
-                                        <FluentIcon Value="@(new Icons.Regular.Size24.Power())"/>
+                                        <FluentIcon Value="@(new Size24.Power())"/>
                                         Start Meeting
                                     </button>
                                 </div>
@@ -78,7 +80,7 @@
         <div class="col-lg-12">
             <FluentCard Class="fluentcard">
                 <FluentLabel Typo="Typography.PaneHeader" Class="mb-2">
-                    <FluentIcon Value="@(new Icons.Regular.Size24.AppRecent())"/>
+                    <FluentIcon Value="@(new Size24.AppRecent())"/>
                     Recent Meetings
                 </FluentLabel>
 
@@ -140,45 +142,51 @@
             <div class="card-header">Schedule Meeting</div>
             <div class="card-body">
                 <EditForm Model="Meeting" OnValidSubmit="SubmitMeeting">
+                    <DataAnnotationsValidator/>
                     <FluentTextField @bind-Value=Meeting.Title Label="Title" Maxlength="1000" Class="mb-3"
                                      TextFieldType="TextFieldType.Text" Style="width: 400px;" Autofocus=true/>
-                    <div class="vstack gap-3">
-                        <h4>Date and Time</h4>
+                        <ValidationMessage For="() => Meeting.Title"/>
                         <div class="vstack gap-3">
-                            <h5 class="text-muted">Start</h5>
-                            <div class="hstack gap-2 mb-3">
-                                <FluentDatePicker Label="Date" @bind-Value="Meeting.StartDate" Class="mb-2"/>
-                                <FluentTimePicker @bind-Value="Meeting.StartTime" Label="Time" Class="mb-2"/>
+                            <h4>Date and Time</h4>
+                            <div class="vstack gap-3">
+                                <h5 class="text-muted">Start</h5>
+                                <div class="hstack gap-2 mb-3">
+                                    <FluentDatePicker Label="Date" @bind-Value="Meeting.StartDate" Class="mb-2"/>
+                                    <ValidationMessage For="() => Meeting.StartDate"/>
+                                    <FluentTimePicker @bind-Value="Meeting.StartTime" Label="Time" Class="mb-2"/>
+                                    <ValidationMessage For="() => Meeting.StartTime"/>
+                                </div>
+                            </div>
+                            <div class="vstack gap-3 mb-3">
+                                <h5 class="text-muted">End</h5>
+                                <div class="hstack gap-2">
+                                    <FluentDatePicker Label="Date" @bind-Value="Meeting.EndDate" Class="mb-3"/>
+                                    <ValidationMessage For="() => Meeting.EndDate"/>
+                                    <FluentDatePicker @bind-Value="Meeting.EndTime" Label="Time" Class="mb-3"/>
+                                    <ValidationMessage For="() => Meeting.EndTime"/>
+                                </div>
                             </div>
                         </div>
-                        <div class="vstack gap-3 mb-3">
-                            <h5 class="text-muted">End</h5>
-                            <div class="hstack gap-2">
-                                <FluentDatePicker Label="Date" @bind-Value="Meeting.EndDate" Class="mb-3"/>
+                        <FluentTextArea @bind-Value="Meeting.Description" Style="width: 400px"
+                                        Resize="TextAreaResize.Vertical" Placeholder="Description"
+                                        Class="mb-2"></FluentTextArea>
+                        <ValidationMessage For="() => Meeting.Description"/>
+                        <hr/>
 
-                                <FluentDatePicker @bind-Value="Meeting.EndTime" Label="Time" Class="mb-3"/>
-                            </div>
-                        </div>
-                    </div>
-                    <FluentTextArea @bind-Value=Meeting.Description Style="width: 400px"
-                                    Resize="TextAreaResize.Vertical" Placeholder="Description"
-                                    Class="mb-2"></FluentTextArea>
-                    <hr/>
+                        <button class="btn btn-primary" type="submit">
+                            <FluentIcon Value="@(new Size16.Add())" Color="Color.Lightweight"/>
+                            Create Meeting
+                        </button>
 
-                    <button class="btn btn-primary" type="submit">
-                        <FluentIcon Value="@(new Icons.Regular.Size16.Add())" Color="Color.Lightweight"/>
-                        Create Meeting
-                    </button>
+                        <button class="btn btn-info" @onclick="ResetMeetingForm" type="button">
+                            <FluentIcon Value="@(new Size16.Resize())"/>
+                            Reset
+                        </button>
 
-                    <button class="btn btn-info" @onclick="ResetMeetingForm" type="button">
-                        <FluentIcon Value="@(new Icons.Regular.Size16.Resize())"/>
-                        Reset
-                    </button>
-
-                    <button class="btn btn-danger" @onclick="CancelMeetingCreate" type="button">
-                        <FluentIcon Value="@(new Icons.Regular.Size16.CalendarCancel())"/>
-                        Cancel
-                    </button>
+                        <button class="btn btn-danger" @onclick="CancelMeetingCreate" type="button">
+                            <FluentIcon Value="@(new Size16.CalendarCancel())"/>
+                            Cancel
+                        </button>
                 </EditForm>
             </div>
         </div>
@@ -320,12 +328,12 @@
 
     class MeetingModel
     {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public DateTime? StartDate { get; set; }
-        public DateTime? StartTime { get; set; }
-        public DateTime? EndDate { get; set; }
-        public DateTime? EndTime { get; set; }
+        [Required] public string Title { get; set; } = string.Empty;
+        [Required] public string Description { get; set; } = string.Empty;
+        [Required] public DateTime? StartDate { get; set; }
+        [Required] public DateTime? StartTime { get; set; }
+        [Required] public DateTime? EndDate { get; set; }
+        [Required] public DateTime? EndTime { get; set; }
     }
 
     public void Dispose() => navState!.ButtonAction -= ScheduleMeeting;

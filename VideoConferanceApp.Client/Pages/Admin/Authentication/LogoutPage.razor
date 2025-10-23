@@ -10,6 +10,6 @@
         ShowLoader = true;
         await Task.Delay(500);
         await AuthStateProvider.SetUserLoggedOut();
-        NavManager.NavigateTo("/");
+        NavManager.NavigateTo("/", true);
     }
 }
