@@ -1,3 +1,7 @@
+using MediatR;
+using VideoConferanceApp.Server.Features.Authentication.CreateUserAccount.Command;
+using VideoConferanceApp.Server.Features.Authentication.LoginUser.Command;
+
 namespace VideoConferanceApp.Server.Controllers
 {
     using Microsoft.AspNetCore.Mvc;

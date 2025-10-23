@@ -18,7 +18,7 @@
         <div class="col-lg-12 mb-3">
             <FluentCard Class="fluentcard">
                 <FluentLabel Typo="Typography.PaneHeader" Class="mb-2">
-                    <FluentIcon Value="@(new Icons.Regular.Size24.Record())" />
+                    <FluentIcon Value="@(new Icons.Regular.Size24.Record())"/>
                     Upcoming Meetings
                 </FluentLabel>
 
@@ -38,9 +38,11 @@
                                         <li class="list-group-item">
                                             Date and Time
                                             <ul class="list-group">
-                                                <li style="padding-left: 3rem; list-style: none">Start: @meeting.StartDateOnly
+                                                <li style="padding-left: 3rem; list-style: none">
+                                                    Start: @meeting.StartDateOnly
                                                     @meeting.StartTimeOnly</li>
-                                                <li style="padding-left: 3rem; list-style: none">End: @meeting.EndDateOnly
+                                                <li style="padding-left: 3rem; list-style: none">
+                                                    End: @meeting.EndDateOnly
                                                     @meeting.EndTimeOnly</li>
                                             </ul>
                                         </li>
@@ -55,8 +57,8 @@
                                     <p>@meeting.Description</p>
 
                                     <button class="btn btn-danger btn-lg btn-block"
-                                        @onclick="() => StartMeeting(meeting.MeetingId)">
-                                        <FluentIcon Value="@(new Icons.Regular.Size24.Power())" />
+                                            @onclick="() => StartMeeting(meeting.MeetingId)">
+                                        <FluentIcon Value="@(new Icons.Regular.Size24.Power())"/>
                                         Start Meeting
                                     </button>
                                 </div>
@@ -76,7 +78,7 @@
         <div class="col-lg-12">
             <FluentCard Class="fluentcard">
                 <FluentLabel Typo="Typography.PaneHeader" Class="mb-2">
-                    <FluentIcon Value="@(new Icons.Regular.Size24.AppRecent())" />
+                    <FluentIcon Value="@(new Icons.Regular.Size24.AppRecent())"/>
                     Recent Meetings
                 </FluentLabel>
 
@@ -96,9 +98,11 @@
                                         <li class="list-group-item">
                                             Date and Time
                                             <ul class="list-group">
-                                                <li style="padding-left: 3rem; list-style: none">Start: @meeting.StartDateOnly
+                                                <li style="padding-left: 3rem; list-style: none">
+                                                    Start: @meeting.StartDateOnly
                                                     @meeting.StartTimeOnly</li>
-                                                <li style="padding-left: 3rem; list-style: none">End: @meeting.EndDateOnly
+                                                <li style="padding-left: 3rem; list-style: none">
+                                                    End: @meeting.EndDateOnly
                                                     @meeting.EndTimeOnly</li>
                                             </ul>
                                         </li>
@@ -130,48 +134,49 @@
 </div>
 
 <NetcodeHubModal @bind-Open="IsMeetingModalOpen" BootstrapClass="border-success rounded p-2 ml-2 mr-2"
-    CustomStyle="min-width: 400px; max-width: 500px">
+                 CustomStyle="min-width: 400px; max-width: 500px">
     <ContentTemplate>
         <div class="card">
             <div class="card-header">Schedule Meeting</div>
             <div class="card-body">
                 <EditForm Model="Meeting" OnValidSubmit="SubmitMeeting">
                     <FluentTextField @bind-Value=Meeting.Title Label="Title" Maxlength="1000" Class="mb-3"
-                        TextFieldType="TextFieldType.Text" Style="width: 400px;" Autofocus=true />
+                                     TextFieldType="TextFieldType.Text" Style="width: 400px;" Autofocus=true/>
                     <div class="vstack gap-3">
                         <h4>Date and Time</h4>
                         <div class="vstack gap-3">
                             <h5 class="text-muted">Start</h5>
                             <div class="hstack gap-2 mb-3">
-                                <FluentDatePicker Label="Date" @bind-Value="Meeting.StartDate" Class="mb-2" />
-                                <FluentTimePicker @bind-Value="Meeting.StartTime" Label="Time" Class="mb-2" />
+                                <FluentDatePicker Label="Date" @bind-Value="Meeting.StartDate" Class="mb-2"/>
+                                <FluentTimePicker @bind-Value="Meeting.StartTime" Label="Time" Class="mb-2"/>
                             </div>
                         </div>
                         <div class="vstack gap-3 mb-3">
                             <h5 class="text-muted">End</h5>
                             <div class="hstack gap-2">
-                                <FluentDatePicker Label="Date" @bind-Value="Meeting.EndDate" Class="mb-3" />
+                                <FluentDatePicker Label="Date" @bind-Value="Meeting.EndDate" Class="mb-3"/>
 
-                                <FluentDatePicker @bind-Value="Meeting.EndTime" Label="Time" Class="mb-3" />
+                                <FluentDatePicker @bind-Value="Meeting.EndTime" Label="Time" Class="mb-3"/>
                             </div>
                         </div>
                     </div>
                     <FluentTextArea @bind-Value=Meeting.Description Style="width: 400px"
-                        Resize="TextAreaResize.Vertical" Placeholder="Description" Class="mb-2"></FluentTextArea>
-                    <hr />
+                                    Resize="TextAreaResize.Vertical" Placeholder="Description"
+                                    Class="mb-2"></FluentTextArea>
+                    <hr/>
 
                     <button class="btn btn-primary" type="submit">
-                        <FluentIcon Value="@(new Icons.Regular.Size16.Add())" Color="Color.Lightweight" />
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Add())" Color="Color.Lightweight"/>
                         Create Meeting
                     </button>
 
                     <button class="btn btn-info" @onclick="ResetMeetingForm" type="button">
-                        <FluentIcon Value="@(new Icons.Regular.Size16.Resize())" />
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Resize())"/>
                         Reset
                     </button>
 
                     <button class="btn btn-danger" @onclick="CancelMeetingCreate" type="button">
-                        <FluentIcon Value="@(new Icons.Regular.Size16.CalendarCancel())" />
+                        <FluentIcon Value="@(new Icons.Regular.Size16.CalendarCancel())"/>
                         Cancel
                     </button>
                 </EditForm>
@@ -181,7 +186,7 @@
 </NetcodeHubModal>
 
 <NetcodeHubModal @bind-Open="IsModalMessageOpen" BootstrapClass="border-info rounded p-2 ml-2 mr-2"
-    CustomStyle="min-width: 400px; max-width:500px;">
+                 CustomStyle="min-width: 400px; max-width:500px;">
     <ContentTemplate>
         <div class="card">
             <div class="card-header">Notification!</div>
@@ -192,7 +197,7 @@
         </div>
     </ContentTemplate>
 </NetcodeHubModal>
-<NetcodeHubScreenLoader Show="@ShowLoader" />
+<NetcodeHubScreenLoader Show="@ShowLoader"/>
 
 @code {
     bool IsMeetingModalOpen = false;
@@ -223,7 +228,7 @@
         await Task.Delay(500);
 
         HostId = (await AuthState!).User.Claims
-        .FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)!.Value;
+            .FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)!.Value;
 
         if (string.IsNullOrEmpty(HostId)) return;
 
