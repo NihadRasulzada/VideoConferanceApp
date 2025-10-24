@@ -1,5 +1,6 @@
 using Twilio;
 using Twilio.Jwt.AccessToken;
+using Twilio.Rest.Video.V1;
 using VideoConferanceApp.Shared.Meeting.Responses;
 
 namespace VideoConferanceApp.Server.Infrastructure.Services;
@@ -39,5 +40,11 @@ public class TwilioService : ITwilioService
 
     public TwilioServiceResponse CreateRoom(string roomName)
     {
+        var response = RoomResource.Create(type: RoomResource.RoomTypeEnum.Group, uniqueName: roomName,
+            maxParticipants: 10, recordParticipantsOnConnect: false);
+        if (response.Sid != null)
+            return new TwilioServiceResponse { IsSuccess = true, Message = $"Room status: {response.Status}" };
+        else
+            return new TwilioServiceResponse { IsSuccess = false, Message = $"Room could not be created." };
     }
 }

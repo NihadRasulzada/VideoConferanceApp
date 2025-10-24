@@ -10,11 +10,11 @@ namespace VideoConferanceApp.Server.Controllers
     public class TwilioController(ITwilioService twilioService) : ControllerBase
     {
         [HttpGet("token/{username}/{meetingId}")]
-        [Authorize]
-        public async Task<ActionResult<GetMeetingsResponse>> GetMeetings(string username, string meetingId)
+        [AllowAnonymous]
+        public ActionResult<TwilioServiceResponse> GetMeetingToken(string username, string meetingId)
         {
             var response = twilioService.GenerateMeetingToken(username, meetingId);
-            return response.IsSuccess ? Ok(response) : NotFound(response);
+            return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
     }
 }

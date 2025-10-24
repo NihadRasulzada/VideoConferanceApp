@@ -1,296 +1,293 @@
-﻿@* @page "/join-meeting/{MeetingId}/{MeetingPasscode}" *@
-@* @using VideoConferanceApp.Shared.Meeting.Requests *@
-@* @using VideoConferanceApp.Shared.Meeting.Responses *@
-@* @using System.ComponentModel.DataAnnotations *@
-@* @using Microsoft.AspNetCore.SignalR.Client *@
-@* @using Microsoft.FluentUI.AspNetCore.Components *@
-@* @using NetcodeHub.Packages.Components.Modal *@
-@* @using NetcodeHub.Packages.Components.ScreenLoader *@
-@* @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons *@
-@* @layout AttendeeLayout *@
-@* @implements IAsyncDisposable *@
-@* *@
-@* <div class="row" style="opacity:@PageOpacity"> *@
-@*     <div class="co-lg-12 card border-0"> *@
-@*         <div class="card-body video-conference-container" id="@ContainerId"></div> *@
-@*         <div class="card-footer d-flex justify-content-between"> *@
-@*             <button class="btn btn-danger" @onclick="LeaveMeeting">Leave Meeting</button> *@
-@*             <FluentMenuButton IconStart="new Icons.Regular.Size16.ConferenceRoom()" *@
-@*             ButtonAppearance="@Appearance.Neutral" *@
-@*             Text="Participants" *@
-@*             Items="@ConnectedUser.ToDictionary()" /> *@
-@* *@
-@*             @if (IsMicOn) *@
-@*             { *@
-@*                 <div class="hstack gap-1"> *@
-@*                     <FluentIcon Value="@(new Icons.Filled.Size20.Mic())" *@
-@*                     OnClick="ManageMic" *@
-@*                     Style="cursor:pointer" /> *@
-@*                     <span>On</span> *@
-@*                 </div> *@
-@* *@
-@*             } *@
-@*             else *@
-@*             { *@
-@*                 <div class="hstack gap-1"> *@
-@*                     <FluentIcon Value="@(new Icons.Regular.Size20.SpeakerMute())" *@
-@*                     OnClick="ManageMic" *@
-@*                     Style="cursor:pointer" /> *@
-@*                     <span>Off</span> *@
-@*                 </div> *@
-@*             } *@
-@*         </div> *@
-@*     </div> *@
-@* </div> *@
-@* <NetcodeHubModal @bind-Open="IsModalOpen" *@
-@* BootstrapClass="border-success rounded p-2 ml-2 mr-2" *@
-@* CustomStyle="min-width:400px; max-width:500px;"> *@
-@*     <ContentTemplate> *@
-@*         <div class="card"> *@
-@*             <div class="card-header">Join Meeting</div> *@
-@*             <div class="card-body"> *@
-@*                 <FluentEditForm Model="ConnectProfile" Enhance *@
-@*                 OnValidSubmit="ConnectToMeeting"> *@
-@*                     <DataAnnotationsValidator /> *@
-@*                     <div class="form-group mb-3"> *@
-@*                         <FluentTextField Style="width:350px" *@
-@*                         @bind-Value=ConnectProfile.Name Label="Provide Your Display Name" /> *@
-@*                         <ValidationMessage For="()=>ConnectProfile.Name" /> *@
-@*                     </div> *@
-@*                     <FluentButton Appearance="Appearance.Accent" *@
-@*                     Type="ButtonType.Submit">Join Meeting</FluentButton> *@
-@*                 </FluentEditForm> *@
-@*             </div> *@
-@*         </div> *@
-@*     </ContentTemplate> *@
-@* </NetcodeHubModal> *@
-@* <NetcodeHubModal @bind-Open="IsModalMessageOpen" *@
-@* BootstrapClass="border-info rounded p-2 ml-2 mr-2" *@
-@* CustomStyle="min-width:400px; max-width:500px;"> *@
-@*     <ContentTemplate> *@
-@*         <div class="card"> *@
-@*             <div class="card-header">Notification!</div> *@
-@*             <div class="card-body"> *@
-@*                 <div class="alert alert-info text-center">@Message</div> *@
-@*                 <button class="btn btn-info" @onclick="Ok">Ok</button> *@
-@*             </div> *@
-@*         </div> *@
-@*     </ContentTemplate> *@
-@* </NetcodeHubModal> *@
-@* <NetcodeHubScreenLoader Show="ShowLoader" /> *@
-@* <FluentMenuProvider /> *@
-@* @code { *@
-@*     private HubConnection? _hubConnection; *@
-@*     static bool IsMicOn = true; *@
-@*     int PageOpacity = 0; *@
-@*     bool IsModalOpen = false; *@
-@*     bool ShowLoader = false; *@
-@*     bool IsModalMessageOpen = false; *@
-@*     string Message = string.Empty; *@
-@*     const string ContainerId = "client-video-container"; *@
-@*     string MyConnectionId = string.Empty; *@
-@* *@
-@*     Profile ConnectProfile = new(); *@
-@* *@
-@*     [Parameter] public string MeetingId { get; set; } = string.Empty; *@
-@*     [Parameter] public string MeetingPasscode { get; set; } = string.Empty; *@
-@* *@
-@*     OrderedDictionary<string, string> ConnectedUser = new(); *@
-@* *@
-@*     protected override void OnParametersSet() *@
-@*     { *@
-@*         // verify meeting credential not Null *@
-@*         if (string.IsNullOrEmpty(MeetingId) || string.IsNullOrEmpty(MeetingPasscode)) *@
-@*         { *@
-@*             Message = "Unable to connect to server:invalid meeting credentials provided"; *@
-@*             IsModalMessageOpen = true; *@
-@*             return; *@
-@*         } *@
-@*     } *@
-@* *@
-@*     protected async override Task OnInitializedAsync() *@
-@*     { *@
-@*         // show modal for name provision *@
-@*         IsModalOpen = true; *@
-@* *@
-@*         // get base address from config file *@
-@*         string baseAddress = config["Server:BaseAddress"]!; *@
-@*         if (string.IsNullOrEmpty(baseAddress)) *@
-@*         { *@
-@*             DisplayMessage("Unable to connect to server:invalid address provided"); *@
-@*             return; *@
-@*         } *@
-@* *@
-@*         // connect to Hub *@
-@*         _hubConnection = new HubConnectionBuilder() *@
-@*             .WithUrl($"{baseAddress}/meetinghub") *@
-@*             .WithAutomaticReconnect() *@
-@*             .Build(); *@
-@* *@
-@*         // subscribe to meeting close event from the hub *@
-@*         _hubConnection.On("MeetingClosed", async () => *@
-@*         { *@
-@*             // leave twilio meeting *@
-@*             await twilioService.LeaveMeeting(ContainerId); *@
-@* *@
-@*             Console.WriteLine("Meeting Closed Event fired"); *@
-@* *@
-@*             // Delete user Id when meeting closes and navigate to close page. *@
-@*             string userId = config["Attendee:AutoGenerateId"]!; *@
-@*             if (userId == null) *@
-@*             { *@
-@*                 DisplayMessage("User Id not found"); *@
-@*                 return; *@
-@*             } *@
-@* *@
-@*             await localStorageService.DeleteItemAsync(userId); *@
-@*             NavManager.NavigateTo("/meeting-ended"); *@
-@*         }); *@
-@* *@
-@*         // subscribe to notify self when connected successfully *@
-@*         _hubConnection.On<string>("Connected", (connectionId) => *@
-@*         { MyConnectionId = connectionId; }); *@
-@* *@
-@* *@
-@*         // get connected users *@
-@*         _hubConnection.On("GetConnectedUsers", async () => *@
-@*        { *@
-@*            Console.WriteLine("Get Connected User Event fired"); *@
-@*            GetMeetingMembersResponse? result = *@
-@*         await meetingService.GetConnectedMembers(MeetingId); *@
-@* *@
-@*            // check if opertion was successfull *@
-@*            Console.WriteLine(result!.Message); *@
-@*            if (!result.IsSuccess) *@
-@*            { *@
-@*                ConnectedUser = new(); *@
-@*                return; *@
-@*            } *@
-@* *@
-@*            int index = 1; *@
-@*            foreach (var user in result.Data!) *@
-@*            { *@
-@*                ConnectedUser.Add(index.ToString(), user); *@
-@*                index++; *@
-@*            } *@
-@*            await InvokeAsync(StateHasChanged); *@
-@*        }); *@
-@* *@
-@*         // Start the connection *@
-@*         // check the state first *@
-@*         if (_hubConnection.State == HubConnectionState.Disconnected) *@
-@*             await _hubConnection.StartAsync(); *@
-@*     } *@
-@* *@
-@* *@
-@* *@
-@* *@
-@* *@
-@*     void Ok() => IsModalMessageOpen = false; *@
-@* *@
-@*     void DisplayMessage(string message) *@
-@*     { *@
-@*         Message = message; *@
-@*         IsModalMessageOpen = true; *@
-@*         IsModalOpen = false; *@
-@*         StateHasChanged(); *@
-@*     } *@
-@* *@
-@*     public class Profile *@
-@*     { *@
-@*         [Required] *@
-@*         public string Name { get; set; } = string.Empty; *@
-@*     } *@
-@* *@
-@*     async Task ConnectToMeeting() *@
-@*     { *@
-@*         IsModalOpen = false; *@
-@* *@
-@*         string key = config["Attendee:AutoGenerateId"]!; *@
-@* *@
-@*         if (key == null) *@
-@*         { *@
-@*             DisplayMessage("Storage Key is null"); *@
-@*             return; *@
-@*         } *@
-@* *@
-@*         // check if id already generated *@
-@*         string userId = await localStorageService.GetItemAsStringAsync(key); *@
-@* *@
-@*         if (string.IsNullOrEmpty(userId)) *@
-@*         { *@
-@*             // Generate UserId and keep for this current user *@
-@*             userId = Guid.NewGuid().ToString(); *@
-@*             await localStorageService.SaveAsStringAsync(key, userId); *@
-@*         } *@
-@* *@
-@*         if (string.IsNullOrEmpty(MyConnectionId)) *@
-@*         { *@
-@*             DisplayMessage("Cannot not connect to meeting."); *@
-@*             return; *@
-@*         } *@
-@* *@
-@*         var model =  *@
-@*         new AttachDetailsToConnectionIdRequest(MyConnectionId, userId, ConnectProfile.Name); *@
-@* *@
-@*         // Update the connected Users table with current name *@
-@*         _ = await meetingService.AttachDetailsToConnectionId(model); *@
-@* *@
-@*         // Generate meeting join token *@
-@*         TwilioServiceResponse? response = *@
-@*         await twilioService.GenerateMeetingToken(ConnectProfile.Name, MeetingId)!; *@
-@* *@
-@*         if (!response!.IsSuccess) *@
-@*         { *@
-@*             ShowLoader = false; *@
-@*             DisplayMessage(response.Message!); *@
-@*             return; *@
-@*         } *@
-@* *@
-@*         try *@
-@*         { *@
-@*             // join meeting table with signalR and them notify all clients that new member connected *@
-@*             await _hubConnection!.SendAsync("JoinMeeting", MeetingId, userId, MeetingPasscode); *@
-@* *@
-@* *@
-@*             // join twilio meeting with token *@
-@*             await twilioService *@
-@*             .JoinMeeting(token: response.Data!, roomName: MeetingId, containerId: ContainerId); *@
-@* *@
-@*             PageOpacity = 1; *@
-@*             ShowLoader = false; *@
-@* *@
-@*         }catch(Exception ex){ *@
-@*             DisplayMessage(ex.Message); *@
-@*             return; *@
-@*         } *@
-@*     } *@
-@* *@
-@* *@
-@* *@
-@*     async Task ManageMic() *@
-@*     { *@
-@*         await twilioService.ToggleMic(); *@
-@*         IsMicOn = !IsMicOn; *@
-@*     } *@
-@* *@
-@*     async Task LeaveMeeting() *@
-@*     { *@
-@*         // leave twilio meeting *@
-@*         await twilioService.LeaveMeeting(ContainerId); *@
-@*         NavManager.NavigateTo("/meeting-status"); *@
-@*     } *@
-@* *@
-@*     public async ValueTask DisposeAsync() *@
-@*     { *@
-@*         // leave meeting when user navigates *@
-@*         await twilioService.LeaveMeeting(ContainerId); *@
-@* *@
-@*         if (_hubConnection != null) *@
-@*         { *@
-@*             await _hubConnection.StopAsync(); *@
-@*             await _hubConnection.DisposeAsync(); *@
-@*         } *@
-@*     } *@
-@* *@
-@* } *@
+﻿@page "/join-meeting/{MeetingId}/{MeetingPasscode}"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
+@using NetcodeHub.Packages.Components.Modal
+@using NetcodeHub.Packages.Components.ScreenLoader
+@using VideoConferanceApp.Shared.Meeting.Responses
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@using Size20 = Microsoft.FluentUI.AspNetCore.Components.Icons.Filled.Size20
+@layout AttendeeLayout
+@implements IAsyncDisposable
+
+<div class="row" style="opacity:@PageOpacity">
+    <div class="co-lg-12 card border-0">
+        <div class="card-body video-conference-container" id="@ContainerId"></div>
+        <div class="card-footer d-flex justify-content-between">
+            <button class="btn btn-danger" @onclick="LeaveMeeting">Leave Meeting</button>
+            <FluentMenuButton IconStart="new Size16.ConferenceRoom()"
+                              ButtonAppearance="@Appearance.Neutral"
+                              Text="Participants"
+                              Items="@ConnectedUser.ToDictionary()"/>
+
+            @if (IsMicOn)
+            {
+                <div class="hstack gap-1">
+                    <FluentIcon Value="@(new Size20.Mic())"
+                                OnClick="ManageMic"
+                                Style="cursor:pointer"/>
+                    <span>On</span>
+                </div>
+            }
+            else
+            {
+                <div class="hstack gap-1">
+                    <FluentIcon Value="@(new Icons.Regular.Size20.SpeakerMute())"
+                                OnClick="ManageMic"
+                                Style="cursor:pointer"/>
+                    <span>Off</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<NetcodeHubModal @bind-Open="IsModalOpen"
+                 BootstrapClass="border-success rounded p-2 ml-2 mr-2"
+                 CustomStyle="min-width:400px; max-width:500px;">
+    <ContentTemplate>
+        <div class="card">
+            <div class="card-header">Join Meeting</div>
+            <div class="card-body">
+                <FluentEditForm Model="ConnectProfile" Enhance
+                                OnValidSubmit="ConnectToMeeting">
+                    <DataAnnotationsValidator/>
+                    <div class="form-group mb-3">
+                        <FluentTextField Style="width:350px"
+                                         @bind-Value="ConnectProfile.Name" Label="Provide Your Display Name"/>
+                        <ValidationMessage For="()=>ConnectProfile.Name"/>
+                    </div>
+                    <FluentButton Appearance="Appearance.Accent"
+                                  Type="ButtonType.Submit">Join Meeting
+                    </FluentButton>
+                </FluentEditForm>
+            </div>
+        </div>
+    </ContentTemplate>
+</NetcodeHubModal>
+<NetcodeHubModal @bind-Open="IsModalMessageOpen"
+                 BootstrapClass="border-info rounded p-2 ml-2 mr-2"
+                 CustomStyle="min-width:400px; max-width:500px;">
+    <ContentTemplate>
+        <div class="card">
+            <div class="card-header">Notification!</div>
+            <div class="card-body">
+                <div class="alert alert-info text-center">@Message</div>
+                <button class="btn btn-info" @onclick="Ok">Ok</button>
+            </div>
+        </div>
+    </ContentTemplate>
+</NetcodeHubModal>
+<NetcodeHubScreenLoader Show="ShowLoader"/>
+<FluentMenuProvider/>
+
+@code {
+    private HubConnection? _hubConnection;
+    static bool IsMicOn = true;
+    int PageOpacity = 0;
+    bool IsModalOpen = false;
+    bool ShowLoader = false;
+    bool IsModalMessageOpen = false;
+    string Message = string.Empty;
+    const string ContainerId = "client-video-container";
+    string MyConnectionId = string.Empty;
+
+    Profile ConnectProfile = new();
+
+    [Parameter] public string MeetingId { get; set; } = string.Empty;
+    [Parameter] public string MeetingPasscode { get; set; } = string.Empty;
+
+    OrderedDictionary<string, string> ConnectedUser = new();
+
+    protected override void OnParametersSet()
+    {
+        // verify meeting credential not Null
+        if (string.IsNullOrEmpty(MeetingId) || string.IsNullOrEmpty(MeetingPasscode))
+        {
+            Message = "Unable to connect to server:invalid meeting credentials provided";
+            IsModalMessageOpen = true;
+            return;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // show modal for name provision
+        IsModalOpen = true;
+
+        // get base address from config file
+        var baseAddress = config["Server:BaseAddress"]!;
+        if (string.IsNullOrEmpty(baseAddress))
+        {
+            DisplayMessage("Unable to connect to server:invalid address provided");
+            return;
+        }
+
+        // connect to Hub
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl($"{baseAddress}/meetinghub")
+            .WithAutomaticReconnect()
+            .Build();
+
+        // subscribe to meeting close event from the hub
+        _hubConnection.On("MeetingClosed", async () =>
+        {
+            // leave twilio meeting
+            await twilioService.LeaveMeeting(ContainerId);
+
+            Console.WriteLine("Meeting Closed Event fired");
+
+            // Delete user Id when meeting closes and navigate to close page.
+            var userId = config["Attendee:AutoGenerateId"]!;
+            if (userId == null)
+            {
+                DisplayMessage("User Id not found");
+                return;
+            }
+
+            await localStorageService.DeleteItemAsync(userId);
+            NavManager.NavigateTo("/meeting-ended");
+        });
+
+        // subscribe to notify self when connected successfully
+        _hubConnection.On<string>("Connected", (connectionId) => { MyConnectionId = connectionId; });
+
+
+        // get connected users
+        _hubConnection.On("GetConnectedUsers", async () =>
+        {
+            Console.WriteLine("Get Connected User Event fired");
+            var result =
+                await meetingService.GetConnectedMembers(MeetingId);
+
+            // check if opertion was successfull
+            Console.WriteLine(result!.Message);
+            if (!result.IsSuccess)
+            {
+                ConnectedUser = new OrderedDictionary<string, string>();
+                return;
+            }
+
+            var index = 1;
+            foreach (var user in result.Data!)
+            {
+                ConnectedUser.Add(index.ToString(), user);
+                index++;
+            }
+
+            await InvokeAsync(StateHasChanged);
+        });
+
+        if (_hubConnection.State == HubConnectionState.Disconnected)
+            await _hubConnection.StartAsync();
+    }
+
+
+    void Ok()
+    {
+        IsModalMessageOpen = false;
+    }
+
+    void DisplayMessage(string message)
+    {
+        Message = message;
+        IsModalMessageOpen = true;
+        IsModalOpen = false;
+        StateHasChanged();
+    }
+
+    public class Profile
+    {
+        [Required] public string Name { get; set; } = string.Empty;
+    }
+
+    async Task ConnectToMeeting()
+    {
+        IsModalOpen = false;
+
+        var key = config["Attendee:AutoGenerateId"]!;
+
+        if (key == null)
+        {
+            DisplayMessage("Storage Key is null");
+            return;
+        }
+
+        string userId = await localStorageService.GetItemAsStringAsync(key);
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            userId = Guid.NewGuid().ToString();
+            await localStorageService.SaveAsStringAsync(key, userId);
+        }
+
+        if (string.IsNullOrEmpty(MyConnectionId))
+        {
+            DisplayMessage("Cannot not connect to meeting.");
+            return;
+        }
+
+        var model =
+            new AttachDetailsToConnectionIdRequest(MyConnectionId, userId, ConnectProfile.Name);
+
+        // Update the connected Users table with current name
+        _ = await meetingService.AttachDetailsToConnectionId(model);
+
+        // Generate meeting join token
+        var response =
+            await twilioService.GenerateMeetingToken(ConnectProfile.Name, MeetingId)!;
+
+        if (!response!.IsSuccess)
+        {
+            ShowLoader = false;
+            DisplayMessage(response.Message!);
+            return;
+        }
+
+        try
+        {
+            // join meeting table with signalR and them notify all clients that new member connected
+            await _hubConnection!.SendAsync("JoinMeeting", MeetingId, userId, MeetingPasscode);
+
+
+            // join twilio meeting with token
+            await twilioService
+                .JoinMeeting(response.Data!, MeetingId, ContainerId);
+
+            PageOpacity = 1;
+            ShowLoader = false;
+        }
+        catch (Exception ex)
+        {
+            DisplayMessage(ex.Message);
+            return;
+        }
+    }
+
+
+    async Task ManageMic()
+    {
+        await twilioService.ToggleMic();
+        IsMicOn = !IsMicOn;
+    }
+
+    async Task LeaveMeeting()
+    {
+        // leave twilio meeting
+        await twilioService.LeaveMeeting(ContainerId);
+        NavManager.NavigateTo("/meeting-status");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // leave meeting when user navigates
+        await twilioService.LeaveMeeting(ContainerId);
+
+        if (_hubConnection != null)
+        {
+            await _hubConnection.StopAsync();
+            await _hubConnection.DisposeAsync();
+        }
+    }
+
+}
