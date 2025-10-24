@@ -8,7 +8,6 @@
 @using NetcodeHub.Packages.Components.ScreenLoader
 @using VideoConferanceApp.Shared.Meeting.Requests
 @using VideoConferanceApp.Shared.Meeting.Responses
-@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @implements IDisposable
 @layout DashboardLayout
 @attribute [Authorize]
@@ -162,7 +161,7 @@
                                 <div class="hstack gap-2">
                                     <FluentDatePicker Label="Date" @bind-Value="Meeting.EndDate" Class="mb-3"/>
                                     <ValidationMessage For="() => Meeting.EndDate"/>
-                                    <FluentDatePicker @bind-Value="Meeting.EndTime" Label="Time" Class="mb-3"/>
+                                    <FluentTimePicker @bind-Value="Meeting.EndTime" Label="Time" Class="mb-3"/>
                                     <ValidationMessage For="() => Meeting.EndTime"/>
                                 </div>
                             </div>

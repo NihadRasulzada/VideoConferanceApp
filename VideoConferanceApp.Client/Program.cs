@@ -16,15 +16,17 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddNetcodeHubLocalStorageService();
 
 string clientName = builder.Configuration["HttpClient:Name"]! ??
-    throw new InvalidOperationException("Config Setup for HttpClient not found");
+                    throw new InvalidOperationException("Config Setup for HttpClient not found");
+
+builder.Services.AddScoped<HttpDelegate>();
 
 builder.Services.AddHttpClient(clientName, options =>
 {
     string baseAddress = builder.Configuration["Server:BaseAddress"]! ??
-        throw new InvalidOperationException("Base Address not found");
+                         throw new InvalidOperationException("Base Address not found");
 
     options.BaseAddress = new Uri($"{baseAddress}/api/");
-});
+}).AddHttpMessageHandler<HttpDelegate>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITwilioService, TwilioService>();

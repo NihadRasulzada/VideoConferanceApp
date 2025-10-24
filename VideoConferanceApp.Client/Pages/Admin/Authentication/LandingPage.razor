@@ -68,8 +68,8 @@
         LoginUserResponse? response = await authService.Login(Login)!;
         if (response!.IsSuccess)
         {
-            string token = response!.JwtToken;
-            await AuthStateProvider.SetUserAuthenticated(token);
+            var combinedToken = $"{response!.JwtToken}|{response.RefreshToken}";
+            await AuthStateProvider.SetUserAuthenticated(combinedToken);
             NavManager.NavigateTo("/dashboard", true);
             return;
         }

@@ -1,4 +1,3 @@
-
 let localAudioTrack = null;
 let localTracks = [];
 let isAudioMuted = false;

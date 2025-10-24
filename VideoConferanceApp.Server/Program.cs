@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using VideoConferanceApp.Server.Helpers;
 using VideoConferanceApp.Server.Infrastructure.Data;
+using VideoConferanceApp.Server.Infrastructure.Services;
 using VideoConferanceApp.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +46,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
+builder.Services.AddScoped<ITwilioService, TwilioService>();
 
 builder.Services.AddAuthorization();
 

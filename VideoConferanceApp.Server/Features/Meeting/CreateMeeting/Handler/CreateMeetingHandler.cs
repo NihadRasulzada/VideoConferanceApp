@@ -2,11 +2,12 @@ using System.Security.Cryptography;
 using MediatR;
 using VideoConferanceApp.Server.Features.Meeting.CreateMeeting.Command;
 using VideoConferanceApp.Server.Infrastructure.Data;
+using VideoConferanceApp.Server.Infrastructure.Services;
 using VideoConferanceApp.Shared.Meeting.Responses;
 
 namespace VideoConferanceApp.Server.Features.Meeting.CreateMeeting.Handler;
 
-public class CreateMeetingHandler(AppDbContext context, IConfiguration config)
+public class CreateMeetingHandler(AppDbContext context, IConfiguration config, ITwilioService twilioService)
     : IRequestHandler<CreateMeetingCommand, CreateMeetingResponse>
 {
     public async Task<CreateMeetingResponse> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)
@@ -25,7 +26,7 @@ public class CreateMeetingHandler(AppDbContext context, IConfiguration config)
 
         var meetingId = GenerateMeetingId();
 
-        TwilioServiceResponse twilioResponse = await TwilioService.CreateRoom(meetingId);
+        var twilioResponse = twilioService.CreateRoom(meetingId);
 
         if (!twilioResponse.IsSuccess)
             return new CreateMeetingResponse { IsSuccess = twilioResponse.IsSuccess, Message = twilioResponse.Message };
