@@ -1,25 +1,26 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using System.Security.Claims
+﻿@page "/dashboard"
+@using VideoConferanceApp.Shared.Meeting.Responses
+@using VideoConferanceApp.Shared.Meeting.Requests
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
 @using NetcodeHub.Packages.Components.Modal
 @using NetcodeHub.Packages.Components.ScreenLoader
-@using VideoConferanceApp.Shared.Meeting.Requests
-@using VideoConferanceApp.Shared.Meeting.Responses
-@implements IDisposable
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@using System.ComponentModel.DataAnnotations
 @layout DashboardLayout
+@implements IDisposable
 @attribute [Authorize]
-@page "/dashboard"
-
-<div class="container-fluid" style="background-color: var(--neutral-layer-3); margin-left: -9px; width: 95vw;">
+<div class="container-fluid"
+     style="background-color: var(--neutral-layer-3); margin-left:-9px; width:95vw;">
     <div class="row m-3">
-        @* Curret Meeting *@
+        @* CURRENT MEETINGS *@
         <div class="col-lg-12 mb-3">
             <FluentCard Class="fluentcard">
-                <FluentLabel Typo="Typography.PaneHeader" Class="mb-2">
-                    <FluentIcon Value="@(new Size24.Record())"/>
+                <FluentLabel Typo="Typography.PaneHeader"
+                             Class="mb-2">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.Record())"/>
                     Upcoming Meetings
                 </FluentLabel>
 
@@ -33,23 +34,23 @@
                             <div class="row">
                                 <div class="col-lg-7">
                                     <ul class="list-group">
-                                        <li class="list-group-item">ID: @meeting.MeetingId</li>
-                                        <li class="list-group-item">Password: @meeting.Passcode</li>
+                                        <li class="list-group-item"> ID: @meeting.MeetingId</li>
+                                        <li class="list-group-item"> Password: @meeting.Passcode</li>
 
                                         <li class="list-group-item">
                                             Date and Time
                                             <ul class="list-group">
-                                                <li style="padding-left: 3rem; list-style: none">
-                                                    Start: @meeting.StartDateOnly
-                                                    @meeting.StartTimeOnly</li>
-                                                <li style="padding-left: 3rem; list-style: none">
-                                                    End: @meeting.EndDateOnly
-                                                    @meeting.EndTimeOnly</li>
+                                                <li style="padding-left:3rem; list-style:none">
+                                                    Start: @meeting.StartDateOnly @meeting.StartTimeOnly</li>
+                                                <li style="padding-left:3rem; list-style:none">
+                                                    End: @meeting.EndDateOnly @meeting.EndTimeOnly</li>
                                             </ul>
                                         </li>
                                         <li class="list-group-item text-primary">
                                             Link:
-                                            <a href="@meeting.Link">@meeting.Link</a>
+                                            <a href="@meeting.Link">
+                                                @meeting.Link
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -59,7 +60,7 @@
 
                                     <button class="btn btn-danger btn-lg btn-block"
                                             @onclick="() => StartMeeting(meeting.MeetingId)">
-                                        <FluentIcon Value="@(new Size24.Power())"/>
+                                        <FluentIcon Value="@(new Icons.Regular.Size24.Power())"/>
                                         Start Meeting
                                     </button>
                                 </div>
@@ -70,16 +71,18 @@
                 }
                 else
                 {
-                    <div class="alert alert-info text-center">@MeetingStatus</div>
+                    <div class="alert alert-info text-center"> @MeetingStatus</div>
                 }
+
             </FluentCard>
         </div>
 
-        @* Recent Meetings *@
+        @* RECENT MEETINGS *@
         <div class="col-lg-12">
             <FluentCard Class="fluentcard">
-                <FluentLabel Typo="Typography.PaneHeader" Class="mb-2">
-                    <FluentIcon Value="@(new Size24.AppRecent())"/>
+                <FluentLabel Typo="Typography.PaneHeader"
+                             Class="mb-2">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.AppRecent())"/>
                     Recent Meetings
                 </FluentLabel>
 
@@ -93,18 +96,16 @@
                             <div class="row">
                                 <div class="col-lg-7">
                                     <ul class="list-group">
-                                        <li class="list-group-item">ID: @meeting.MeetingId</li>
-                                        <li class="list-group-item">Password: @meeting.Passcode</li>
+                                        <li class="list-group-item"> ID: @meeting.MeetingId</li>
+                                        <li class="list-group-item"> Password: @meeting.Passcode</li>
 
                                         <li class="list-group-item">
                                             Date and Time
                                             <ul class="list-group">
-                                                <li style="padding-left: 3rem; list-style: none">
-                                                    Start: @meeting.StartDateOnly
-                                                    @meeting.StartTimeOnly</li>
-                                                <li style="padding-left: 3rem; list-style: none">
-                                                    End: @meeting.EndDateOnly
-                                                    @meeting.EndTimeOnly</li>
+                                                <li style="padding-left:3rem; list-style:none">
+                                                    Start: @meeting.StartDateOnly @meeting.StartTimeOnly</li>
+                                                <li style="padding-left:3rem; list-style:none">
+                                                    End: @meeting.EndDateOnly @meeting.EndTimeOnly</li>
                                             </ul>
                                         </li>
                                         <li class="list-group-item text-primary">
@@ -126,74 +127,96 @@
                 }
                 else
                 {
-                    <div class="alert alert-info text-center">@RecentMeetingStatus</div>
+                    <div class="alert alert-info text-center"> @RecentMeetingStatus</div>
                 }
-
             </FluentCard>
         </div>
     </div>
-</div>
 
-<NetcodeHubModal @bind-Open="IsMeetingModalOpen" BootstrapClass="border-success rounded p-2 ml-2 mr-2"
-                 CustomStyle="min-width: 400px; max-width: 500px">
+</div>
+<NetcodeHubModal @bind-Open="IsMeetingModalOpen"
+                 BootstrapClass="border-success rounded p-2 ml-2 mr-2"
+                 CustomStyle="min-width:400px; max-width:500px;">
+
     <ContentTemplate>
         <div class="card">
             <div class="card-header">Schedule Meeting</div>
             <div class="card-body">
                 <EditForm Model="Meeting" OnValidSubmit="SubmitMeeting">
                     <DataAnnotationsValidator/>
-                    <FluentTextField @bind-Value=Meeting.Title Label="Title" Maxlength="1000" Class="mb-3"
-                                     TextFieldType="TextFieldType.Text" Style="width: 400px;" Autofocus=true/>
-                        <ValidationMessage For="() => Meeting.Title"/>
+                    <FluentTextField @bind-Value=Meeting.Title
+                                     Label="Title"
+                                     Maxlength="1000"
+                                     Class="mb-3"
+                                     TextFieldType="TextFieldType.Text"
+                                     Style="width:400px"
+                                     Autofocus=true/>
+                    <ValidationMessage For="()=>Meeting.Title"/>
+
+                    <div class="vstack gap-3">
+                        <h4>Date and Time</h4>
                         <div class="vstack gap-3">
-                            <h4>Date and Time</h4>
-                            <div class="vstack gap-3">
-                                <h5 class="text-muted">Start</h5>
-                                <div class="hstack gap-2 mb-3">
-                                    <FluentDatePicker Label="Date" @bind-Value="Meeting.StartDate" Class="mb-2"/>
-                                    <ValidationMessage For="() => Meeting.StartDate"/>
-                                    <FluentTimePicker @bind-Value="Meeting.StartTime" Label="Time" Class="mb-2"/>
-                                    <ValidationMessage For="() => Meeting.StartTime"/>
-                                </div>
-                            </div>
-                            <div class="vstack gap-3 mb-3">
-                                <h5 class="text-muted">End</h5>
-                                <div class="hstack gap-2">
-                                    <FluentDatePicker Label="Date" @bind-Value="Meeting.EndDate" Class="mb-3"/>
-                                    <ValidationMessage For="() => Meeting.EndDate"/>
-                                    <FluentTimePicker @bind-Value="Meeting.EndTime" Label="Time" Class="mb-3"/>
-                                    <ValidationMessage For="() => Meeting.EndTime"/>
-                                </div>
+                            <h5 class="text-muted">Start</h5>
+                            <div class="hstack gap-2 mb-3">
+                                <FluentDatePicker Label="Date"
+                                                  @bind-Value="Meeting.StartDate"
+                                                  Class="mb-2"/>
+                                <ValidationMessage For="()=>Meeting.StartDate"/>
+
+                                <FluentTimePicker @bind-Value="Meeting.StartTime"
+                                                  Label="Time"
+                                                  Class="mb-2"/>
+                                <ValidationMessage For="()=>Meeting.StartTime"/>
                             </div>
                         </div>
-                        <FluentTextArea @bind-Value="Meeting.Description" Style="width: 400px"
-                                        Resize="TextAreaResize.Vertical" Placeholder="Description"
-                                        Class="mb-2"></FluentTextArea>
-                        <ValidationMessage For="() => Meeting.Description"/>
-                        <hr/>
 
-                        <button class="btn btn-primary" type="submit">
-                            <FluentIcon Value="@(new Size16.Add())" Color="Color.Lightweight"/>
-                            Create Meeting
-                        </button>
+                        <div class="vstack gap-3 mb-3">
+                            <h5 class="text-muted">End</h5>
+                            <div class="hstack gap-2">
+                                <FluentDatePicker Label="Date"
+                                                  @bind-Value="Meeting.EndDate"
+                                                  Class="mb-3"/>
+                                <ValidationMessage For="()=>Meeting.EndDate"/>
+                                <FluentTimePicker @bind-Value="Meeting.EndTime"
+                                                  Label="Time"
+                                                  Class="mb-3"/>
+                                <ValidationMessage For="()=>Meeting.EndTime"/>
+                            </div>
+                        </div>
 
-                        <button class="btn btn-info" @onclick="ResetMeetingForm" type="button">
-                            <FluentIcon Value="@(new Size16.Resize())"/>
-                            Reset
-                        </button>
+                    </div>
 
-                        <button class="btn btn-danger" @onclick="CancelMeetingCreate" type="button">
-                            <FluentIcon Value="@(new Size16.CalendarCancel())"/>
-                            Cancel
-                        </button>
+                    <FluentTextArea @bind-Value=Meeting.Description
+                                    Style="width:400px"
+                                    Resize="TextAreaResize.Vertical"
+                                    Placeholder="Description"
+                                    Class="mb-2"></FluentTextArea>
+                    <ValidationMessage For="()=>Meeting.Description"/>
+                    <hr/>
+                    <button class="btn btn-primary" type="submit">
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Add())"
+                                    Color="Color.Lightweight"/>
+                        Create Meeting
+                    </button>
+
+                    <button class="btn btn-info" @onclick="ResetMeetingForm" type="button">
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Resize())"/>
+                        Reset
+                    </button>
+
+                    <button class="btn btn-danger" @onclick="CancelMeetingCreate" type="button">
+                        <FluentIcon Value="@(new Icons.Regular.Size16.CalendarCancel())"/>
+                        Cancel
+                    </button>
                 </EditForm>
             </div>
         </div>
     </ContentTemplate>
 </NetcodeHubModal>
 
-<NetcodeHubModal @bind-Open="IsModalMessageOpen" BootstrapClass="border-info rounded p-2 ml-2 mr-2"
-                 CustomStyle="min-width: 400px; max-width:500px;">
+<NetcodeHubModal @bind-Open="IsModalMessageOpen"
+                 BootstrapClass="border-info rounded p-2 ml-2 mr-2"
+                 CustomStyle="min-width:400px; max-width:500px;">
     <ContentTemplate>
         <div class="card">
             <div class="card-header">Notification!</div>
@@ -213,12 +236,12 @@
     string MeetingStatus = string.Empty;
 
     bool IsModalMessageOpen = false;
-
     bool ShowLoader = false;
+
     MeetingModel Meeting = new();
 
     [Inject] NavState? navState { get; set; }
-    [CascadingParameter] Task<AuthenticationState> AuthState { get; set; }
+    [CascadingParameter] Task<AuthenticationState>? AuthState { get; set; }
 
     IEnumerable<GetMeeting> Meetings = [];
     IEnumerable<GetMeeting> RecentMeetings = [];
@@ -227,13 +250,16 @@
 
     protected async override Task OnInitializedAsync()
     {
-        if (!(await AuthState!).User.Identity!.IsAuthenticated)
+        // check for authentication
+        var user = (await AuthState!).User.Identity!;
+        if (!user.IsAuthenticated)
             NavManager.NavigateTo("/");
 
         navState!.ButtonAction += ScheduleMeeting;
         ShowLoader = true;
         await Task.Delay(500);
 
+        // get user id
         HostId = (await AuthState!).User.Claims
             .FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)!.Value;
 
@@ -260,21 +286,23 @@
 
     async Task GetMeetings()
     {
-        GetMeetingsResponse? meetingsResponse = await meetingService.GetMeetings(HostId);
-
-        if (meetingsResponse!.IsSuccess)
-            Meetings = meetingsResponse.Data!;
+        // Get meetings
+        GetMeetingsResponse? meetingResponse = await meetingService.GetMeetings(HostId);
+        if (meetingResponse!.IsSuccess)
+            Meetings = meetingResponse.Data!;
         else
-            MeetingStatus = meetingsResponse.Message!;
+            MeetingStatus = meetingResponse.Message!;
     }
 
     async Task GetRecentMeetings()
     {
-        GetRecentMeetingsResponse? recentMeetingsResponse = await meetingService.GetRecentMeetings(HostId);
-        if (recentMeetingsResponse!.IsSuccess)
-            RecentMeetings = recentMeetingsResponse.Data!;
+        // get recent meeetings
+        GetRecentMeetingsResponse? recentMeetingResponse =
+            await meetingService.GetRecentMeetings(HostId);
+        if (recentMeetingResponse!.IsSuccess)
+            RecentMeetings = recentMeetingResponse.Data!;
         else
-            RecentMeetingStatus = recentMeetingsResponse.Message!;
+            RecentMeetingStatus = recentMeetingResponse.Message!;
     }
 
     async Task SubmitMeeting()
@@ -286,29 +314,37 @@
         {
             Description = Meeting.Description,
             Title = Meeting.Title,
-            HostId = (await AuthState!).User.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)!.Value,
+            HostId = (await AuthState!).User.Claims
+                .FirstOrDefault(_ => _.Type == ClaimTypes.NameIdentifier)!.Value,
             EndDateOnly = DateOnly.FromDateTime(Meeting.EndDate!.Value).ToString(),
             EndTimeOnly = TimeOnly.FromDateTime(Meeting.EndTime!.Value).ToString(),
             StartDateOnly = DateOnly.FromDateTime(Meeting.StartDate!.Value).ToString(),
             StartTimeOnly = TimeOnly.FromDateTime(Meeting.StartTime!.Value).ToString()
         };
+
         CreateMeetingResponse? response = await meetingService.CreateMeeting(meeting);
 
+        // set modal message
         ModalMessage = response!.Message!;
 
         if (response!.IsSuccess)
         {
+            // clear both containers
             Meeting = new();
             meeting = new();
             await GetMeetings();
         }
 
+        // hide modal and loader
         ShowLoader = false;
 
+        // show message
         IsModalMessageOpen = true;
 
+        // notify page
         StateHasChanged();
     }
+
 
     void CancelMeetingCreate()
     {
@@ -317,6 +353,7 @@
     }
 
     void ResetMeetingForm() => Meeting = new();
+
 
     async Task StartMeeting(string meetingId)
     {
@@ -334,6 +371,7 @@
         [Required] public DateTime? EndDate { get; set; }
         [Required] public DateTime? EndTime { get; set; }
     }
+
 
     public void Dispose() => navState!.ButtonAction -= ScheduleMeeting;
 }
