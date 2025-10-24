@@ -12,7 +12,7 @@ public class GetRecentMeetingsHandler(AppDbContext context)
     public async Task<GetRecentMeetingsResponse> Handle(GetRecentMeetingsQuery request,
         CancellationToken cancellationToken)
     {
-        var meetings = await context.Meetings.AsNoTracking().Where(_ => _.HostId == request.HostId && _.IsComleted)
+        var meetings = await context.Meetings.AsNoTracking().Where(_ => _.HostId == request.HostId && _.IsCompleted)
             .ToListAsync(cancellationToken);
 
         if (meetings.Count == 0)

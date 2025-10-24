@@ -11,7 +11,7 @@ public class GetMeetingsHandler(AppDbContext context) : IRequestHandler<GetMeeti
     public async Task<GetMeetingsResponse> Handle(GetMeetingsQuery request, CancellationToken cancellationToken)
     {
         var meetings = await context.Meetings.AsNoTracking()
-            .Where(_ => _.HostId == request.HostId && _.IsComleted == false)
+            .Where(_ => _.HostId == request.HostId && _.IsCompleted == false)
             .ToListAsync(cancellationToken);
 
         if (meetings.Count == 0)

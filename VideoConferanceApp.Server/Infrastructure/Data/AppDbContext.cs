@@ -11,5 +11,8 @@ namespace VideoConferanceApp.Server.Infrastructure.Data
         }
 
         public DbSet<Meeting> Meetings { get; set; } = default!;
+        public DbSet<ConnectedUser> ConnectedUsers { get; set; } = default!;
+        public DbSet<ActiveMeeting> ActiveMeetings { get; set; } = default!;
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
     }
 }

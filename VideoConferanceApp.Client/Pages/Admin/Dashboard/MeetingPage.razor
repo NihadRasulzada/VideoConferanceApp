@@ -1,16 +1,14 @@
 ﻿@page "/meeting/{MeetingId}"
 @attribute [Authorize]
-@using System.Security.Claims
+@using VideoConferanceApp.Shared.Meeting.Responses
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 @using Microsoft.AspNetCore.SignalR.Client
 @using Microsoft.FluentUI.AspNetCore.Components
-@using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using NetcodeHub.Packages.Components.Modal
 @using NetcodeHub.Packages.Components.ScreenLoader
-@using VideoConferanceApp.Shared.Meeting.Responses
-@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
-@using Size20 = Microsoft.FluentUI.AspNetCore.Components.Icons.Filled.Size20
 @layout DashboardLayout
 @implements IAsyncDisposable
 
@@ -19,7 +17,7 @@
         <div class="card-body video-conference-container" id="@ContainerId"></div>
         <div class="card-footer d-flex justify-content-between">
             <button class="btn btn-danger" @onclick="CloseMeeting">Close Meeting</button>
-            <FluentMenuButton IconStart="new Size16.ConferenceRoom()"
+            <FluentMenuButton IconStart="new Icons.Regular.Size16.ConferenceRoom()"
                               ButtonAppearance="@Appearance.Neutral"
                               Text="Participants"
                               Items="@ConnectedUser.ToDictionary()"/>
@@ -27,40 +25,40 @@
             @if (IsMicOn)
             {
                 <div class="hstack gap-1">
-                    <FluentIcon Value="@(nnew Size20.Mic))"
+                    <FluentIcon Value="@(new Icons.Filled.Size20.Mic())"
                                 OnClick="ManageMic"
                                 Style="cursor:pointer"/>
                     <span>On</span>
                 </div>
-
             }
             else
             {
                 <div class="hstack gap-1">
-                    new Icons.Regular.Size20.SpeakerMutelar.Size20.SpeakerMute())"
-                    OnClick="ManageMic"
-                    Style="cursor:pointer"/>
+                    <FluentIcon Value="@(new Icons.Regular.Size20.SpeakerMute())"
+                                OnClick="ManageMic"
+                                Style="cursor:pointer"/>
                     <span>Off</span>
-                    </div >
-                }
-            </div>
+                </div>
+            }
         </div>
     </div>
-    <NetcodeHubScreenLoader Show="@ShowLoader"/>
-    <NetcodeHubModal @bind-Open="IsMessageModalOpen"
-                     BootstrapClass="border-info rounded p-2 ml-2 mr-2"
-                     CustomStyle="min-width:400px; max-width:500px;">
-        <ContentTemplate>
-            <div class="card">
-                <div class="card-header">Notification!</div>
-                <div class="card-body">
-                    <div class="alert alert-info text-center">@Message</div>
-                    <button class="btn btn-info" @onclick="Ok">Ok</button>
-                </div>
+</div>
+<NetcodeHubScreenLoader Show="@ShowLoader"/>
+<NetcodeHubModal @bind-Open="IsMessageModalOpen"
+                 BootstrapClass="border-info rounded p-2 ml-2 mr-2"
+                 CustomStyle="min-width:400px; max-width:500px;">
+    <ContentTemplate>
+        <div class="card">
+            <div class="card-header">Notification!</div>
+            <div class="card-body">
+                <div class="alert alert-info text-center">@Message</div>
+                <button class="btn btn-info" @onclick="Ok">Ok</button>
             </div>
-        </ContentTemplate>
-    </NetcodeHubModal>
-    <FluentMenuProvider/>
+        </div>
+    </ContentTemplate>
+</NetcodeHubModal>
+<FluentMenuProvider/>
+
 @code {
     private HubConnection? _hubConnection;
     static bool IsMicOn = true;
@@ -72,21 +70,21 @@
     [Parameter] public string MeetingId { get; set; } = string.Empty;
     [CascadingParameter] Task<AuthenticationState>? AuthState { get; set; }
     OrderedDictionary<string, string> ConnectedUser = new();
+
     protected override void OnParametersSet()
     {
-
         if (string.IsNullOrEmpty(MeetingId))
             NavManager.NavigateTo("/dashboard");
     }
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         ShowLoader = true;
         // get username from auth state
         var user = (await AuthState!).User;
-        var name = user.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Name)!.Value;
+        string name = user.Claims.FirstOrDefault(_ => _.Type == ClaimTypes.Name)!.Value;
 
-        var key = config["Token:Key"]!;
+        string key = config["Token:Key"]!;
         if (key == null)
         {
             DisplayMessage("Invalid token key provided");
@@ -100,7 +98,7 @@
             return;
         }
 
-        var jwtToken = combinedToken.Split('|')[0];
+        string jwtToken = combinedToken.Split('|')[0];
         if (jwtToken == null)
         {
             DisplayMessage("Invalid token provided");
@@ -108,7 +106,7 @@
         }
 
         // connect to the Hub & pass the token to the websocket
-        var baseAddress = config["Server:BaseAddress"]!;
+        string baseAddress = config["Server:BaseAddress"]!;
         _hubConnection = new HubConnectionBuilder()
             .WithUrl($"{baseAddress}/meetinghub", option => { option.AccessTokenProvider = () => Task.FromResult(jwtToken)!; }).WithAutomaticReconnect().Build();
 
@@ -123,11 +121,11 @@
             Console.WriteLine(result!.Message);
             if (!result.IsSuccess)
             {
-                ConnectedUser = new OrderedDictionary<string, string>();
+                ConnectedUser = new();
                 return;
             }
 
-            var index = 1;
+            int index = 1;
             foreach (var user in result.Data!)
             {
                 ConnectedUser.Add(index.ToString(), user);
@@ -150,7 +148,7 @@
 
 
         // get meeting token
-        var response = await twilioService.GenerateMeetingToken(name, MeetingId)!;
+        TwilioServiceResponse? response = await twilioService.GenerateMeetingToken(name, MeetingId)!;
         if (!response!.IsSuccess)
         {
             DisplayMessage(response.Message!);
@@ -174,7 +172,7 @@
 
         // Start twilio meeting
         await twilioService
-            .JoinMeeting(response.Data!, MeetingId, ContainerId);
+            .JoinMeeting(token: response.Data!, roomName: MeetingId, containerId: ContainerId);
         ShowLoader = false;
         PageOpacity = 1;
     }
@@ -217,4 +215,5 @@
             await _hubConnection.DisposeAsync();
         }
     }
+
 }

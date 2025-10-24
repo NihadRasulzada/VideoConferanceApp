@@ -13,5 +13,5 @@ public class Meeting
     public string StartDateOnly { get; set; } = string.Empty;
     public string EndDateOnly { get; set; } = string.Empty;
     public string Link { get; set; } = string.Empty;
-    public bool IsComleted { get; set; } = false;
+    public bool IsCompleted { get; set; } = false;
 }
