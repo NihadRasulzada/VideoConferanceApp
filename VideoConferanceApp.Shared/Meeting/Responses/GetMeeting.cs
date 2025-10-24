@@ -2,7 +2,7 @@
 {
     public class GetMeeting
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string MeetingId { get; set; } = string.Empty;
         public string Passcode { get; set; } = string.Empty;
         public string HostId { get; set; } = string.Empty;

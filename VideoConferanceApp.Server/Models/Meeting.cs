@@ -2,7 +2,7 @@ namespace VideoConferanceApp.Server.Models;
 
 public class Meeting
 {
-    public string Id { get; set; } = string.Empty;
+    public int Id { get; set; }
     public string MeetingId { get; set; } = string.Empty;
     public string Passcode { get; set; } = string.Empty;
     public string HostId { get; set; } = string.Empty;
