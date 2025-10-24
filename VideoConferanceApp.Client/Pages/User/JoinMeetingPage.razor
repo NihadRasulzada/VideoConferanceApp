@@ -5,6 +5,7 @@
 @using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
 @using NetcodeHub.Packages.Components.Modal
 @using NetcodeHub.Packages.Components.ScreenLoader
+@using VideoConferanceApp.Shared.Meeting.Requests
 @using VideoConferanceApp.Shared.Meeting.Responses
 @using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
 @using Size20 = Microsoft.FluentUI.AspNetCore.Components.Icons.Filled.Size20
@@ -157,7 +158,7 @@
         _hubConnection.On("GetConnectedUsers", async () =>
         {
             Console.WriteLine("Get Connected User Event fired");
-            var result =
+            GetMeetingMembersResponse? result =
                 await meetingService.GetConnectedMembers(MeetingId);
 
             // check if opertion was successfull
@@ -178,6 +179,8 @@
             await InvokeAsync(StateHasChanged);
         });
 
+        // Start the connection
+        // check the state first
         if (_hubConnection.State == HubConnectionState.Disconnected)
             await _hubConnection.StartAsync();
     }
@@ -213,10 +216,12 @@
             return;
         }
 
+        // check if id already generated
         string userId = await localStorageService.GetItemAsStringAsync(key);
 
         if (string.IsNullOrEmpty(userId))
         {
+            // Generate UserId and keep for this current user
             userId = Guid.NewGuid().ToString();
             await localStorageService.SaveAsStringAsync(key, userId);
         }
@@ -234,7 +239,7 @@
         _ = await meetingService.AttachDetailsToConnectionId(model);
 
         // Generate meeting join token
-        var response =
+        TwilioServiceResponse? response =
             await twilioService.GenerateMeetingToken(ConnectProfile.Name, MeetingId)!;
 
         if (!response!.IsSuccess)

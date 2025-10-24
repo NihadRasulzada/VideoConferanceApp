@@ -32,11 +32,12 @@
                                 Style="cursor:pointer"/>
                     <span>On</span>
                 </div>
+
             }
             else
             {
                 <div class="hstack gap-1">
-                    new Icons.Regular.Size20.SpeakerMutear.Size20.SpeakerMute())"
+                    new Icons.Regular.Size20.SpeakerMutelar.Size20.SpeakerMute())"
                     OnClick="ManageMic"
                     Style="cursor:pointer"/>
                     <span>Off</span>
@@ -60,7 +61,6 @@
         </ContentTemplate>
     </NetcodeHubModal>
     <FluentMenuProvider/>
-
 @code {
     private HubConnection? _hubConnection;
     static bool IsMicOn = true;
@@ -72,9 +72,9 @@
     [Parameter] public string MeetingId { get; set; } = string.Empty;
     [CascadingParameter] Task<AuthenticationState>? AuthState { get; set; }
     OrderedDictionary<string, string> ConnectedUser = new();
-
     protected override void OnParametersSet()
     {
+
         if (string.IsNullOrEmpty(MeetingId))
             NavManager.NavigateTo("/dashboard");
     }
@@ -116,7 +116,7 @@
         _hubConnection.On("GetConnectedUsers", async () =>
         {
             Console.WriteLine("Get Connected User Event fired");
-            var result =
+            GetMeetingMembersResponse? result =
                 await meetingService.GetConnectedMembers(MeetingId);
 
             // check if opertion was successfull
@@ -217,5 +217,4 @@
             await _hubConnection.DisposeAsync();
         }
     }
-
 }
