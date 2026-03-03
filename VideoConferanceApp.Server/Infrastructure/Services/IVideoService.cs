@@ -10,21 +10,21 @@ namespace VideoConferanceApp.Server.Infrastructure.Services;
 
 public interface IVideoService
 {
-    TwilioServiceResponse GenerateMeetingToken(string identity, string meetingId);
-    TwilioServiceResponse CreateRoom(string roomName);
-    Task<TwilioServiceResponse> GetRoomByName(string roomName);
-    TwilioServiceResponse EndMeeting(string roomSid);
+    VideoServiceResponse GenerateMeetingToken(string identity, string meetingId);
+    VideoServiceResponse CreateRoom(string roomName);
+    Task<VideoServiceResponse> GetRoomByName(string roomName);
+    VideoServiceResponse EndMeeting(string roomSid);
 }
 
 public class VideoService(IConfiguration configuration, AppDbContext db) : IVideoService
 {
-    public TwilioServiceResponse CreateRoom(string roomName) =>
+    public VideoServiceResponse CreateRoom(string roomName) =>
         new() { IsSuccess = true, Message = "Room ready" };
 
-    public TwilioServiceResponse EndMeeting(string roomSid) =>
+    public VideoServiceResponse EndMeeting(string roomSid) =>
         new() { IsSuccess = true, Message = "Room ended" };
 
-    public TwilioServiceResponse GenerateMeetingToken(string identity, string meetingId)
+    public VideoServiceResponse GenerateMeetingToken(string identity, string meetingId)
     {
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
@@ -48,7 +48,7 @@ public class VideoService(IConfiguration configuration, AppDbContext db) : IVide
         };
     }
 
-    public async Task<TwilioServiceResponse> GetRoomByName(string roomName)
+    public async Task<VideoServiceResponse> GetRoomByName(string roomName)
     {
         var exists = await db.Meetings.AnyAsync(m => m.MeetingId == roomName);
         return exists

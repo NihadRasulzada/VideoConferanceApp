@@ -253,7 +253,7 @@
         _ = await meetingService.AttachDetailsToConnectionId(model);
 
         // Generate meeting join token
-        TwilioServiceResponse? response =
+        VideoServiceResponse? response =
             await twilioService.GenerateMeetingToken(ConnectProfile.Name, MeetingId)!;
 
         if (!response!.IsSuccess)

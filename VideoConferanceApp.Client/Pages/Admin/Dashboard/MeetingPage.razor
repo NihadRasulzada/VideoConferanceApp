@@ -162,7 +162,7 @@
 
 
         // get meeting token
-        TwilioServiceResponse? response = await twilioService.GenerateMeetingToken(name, MeetingId)!;
+        VideoServiceResponse? response = await twilioService.GenerateMeetingToken(name, MeetingId)!;
         if (!response!.IsSuccess)
         {
             DisplayMessage(response.Message!);
@@ -218,8 +218,8 @@
     async Task CloseMeeting()
     {
         ShowLoader = true;
-        _ = await meetingService.ClearMeeting(MeetingId);
         await twilioService.CloseMeeting(MeetingId);
+        _ = await meetingService.ClearMeeting(MeetingId);
         await twilioService.LeaveMeeting(ContainerId);
         await Task.Delay(500);
         NavManager.NavigateTo("/dashboard");

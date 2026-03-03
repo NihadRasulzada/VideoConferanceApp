@@ -7,28 +7,28 @@ namespace VideoConferanceApp.Client.Services
 {
     public interface IVideoService
     {
-        Task<TwilioServiceResponse?> GenerateMeetingToken(string username, string meetingId);
+        Task<VideoServiceResponse?> GenerateMeetingToken(string username, string meetingId);
         Task JoinMeeting(string token, string roomName, string containerId);
 
-        Task<TwilioServiceResponse?> CloseMeeting(string meetingId);
+        Task<VideoServiceResponse?> CloseMeeting(string meetingId);
         Task LeaveMeeting(string containerId);
         Task ToggleMic();
     }
 
     public class VideoService(IJSRuntime _js, IHttpExtension httpExtension) : IVideoService
     {
-        public async Task<TwilioServiceResponse?> CloseMeeting(string meetingId)
+        public async Task<VideoServiceResponse?> CloseMeeting(string meetingId)
         {
             var result = await (await httpExtension.GetPrivateClient())
                 .GetAsync($"twilio/end-meeting/{meetingId}");
-            return await result.Content.ReadFromJsonAsync<TwilioServiceResponse>();
+            return await result.Content.ReadFromJsonAsync<VideoServiceResponse>();
         }
 
-        public async Task<TwilioServiceResponse?> GenerateMeetingToken(string username, string meetingId)
+        public async Task<VideoServiceResponse?> GenerateMeetingToken(string username, string meetingId)
         {
             var result = await httpExtension.GetPublicClient()
                 .GetAsync($"twilio/token/{username}/{meetingId}");
-            return await result.Content.ReadFromJsonAsync<TwilioServiceResponse>();
+            return await result.Content.ReadFromJsonAsync<VideoServiceResponse>();
         }
 
         public async Task JoinMeeting(string token, string roomName, string containerId) =>

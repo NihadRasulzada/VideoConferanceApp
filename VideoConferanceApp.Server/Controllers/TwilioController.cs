@@ -17,28 +17,28 @@ namespace VideoConferanceApp.Server.Controllers
     {
         [HttpGet("token/{username}/{meetingId}")]
         [AllowAnonymous]
-        public ActionResult<TwilioServiceResponse>
+        public ActionResult<VideoServiceResponse>
             GetMeetingToken(string username, string meetingId)
         {
-            TwilioServiceResponse response = videoService
+            VideoServiceResponse response = videoService
                 .GenerateMeetingToken(username, meetingId);
             return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
 
         [HttpGet("end-meeting/{meetingId}")]
         [Authorize]
-        public async Task<ActionResult<TwilioServiceResponse>>
+        public async Task<ActionResult<VideoServiceResponse>>
             EndMeeting(string meetingId)
         {
             // first check if meeting room exist at all
-            TwilioServiceResponse getRoomNameResponse =
+            VideoServiceResponse getRoomNameResponse =
                 await videoService.GetRoomByName(meetingId);
 
             if (!getRoomNameResponse.IsSuccess)
                 return NotFound(getRoomNameResponse);
 
             // end meeting
-            TwilioServiceResponse endMeetingResponse =
+            VideoServiceResponse endMeetingResponse =
                 videoService.EndMeeting(getRoomNameResponse.Data!);
 
             if (!endMeetingResponse.IsSuccess)
@@ -48,11 +48,11 @@ namespace VideoConferanceApp.Server.Controllers
                 await getUsersConnectionIdsByMeetingId.Handle(meetingId);
 
             if (userConnectionIds.Count == 0)
-                return NotFound(new TwilioServiceResponse
-                    { IsSuccess = false, Message = "No Attendee connected" });
+                return Ok(new VideoServiceResponse
+                    { IsSuccess = true, Message = "No attendees to notify" });
 
             await hubContext.Clients.Clients(userConnectionIds).SendAsync("MeetingClosed");
-            return Ok(new TwilioServiceResponse
+            return Ok(new VideoServiceResponse
             {
                 IsSuccess = true,
                 Message = $"{userConnectionIds.Count} attendees notified"
