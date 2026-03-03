@@ -15,7 +15,7 @@ public class CreateMeetingHandler(AppDbContext context, IConfiguration config, I
         if (request.CreateMeeting == null)
             return new CreateMeetingResponse { IsSuccess = false, Message = "Object send is null" };
 
-        if (DateTimeOffset.Parse(request.CreateMeeting.StartDateOnly) < DateTimeOffset.UtcNow)
+        if (DateTimeOffset.Parse(request.CreateMeeting.StartDateOnly).Date < DateTimeOffset.UtcNow.Date)
             return new CreateMeetingResponse
                 { IsSuccess = false, Message = "Start date cannot be lesser than today's date" };
 
