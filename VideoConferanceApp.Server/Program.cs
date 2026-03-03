@@ -59,7 +59,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
-builder.Services.AddScoped<ITwilioService, TwilioService>();
+builder.Services.AddScoped<IVideoService, VideoService>();
 
 builder.Services.AddAuthorization();
 

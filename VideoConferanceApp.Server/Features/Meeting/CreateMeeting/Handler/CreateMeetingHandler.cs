@@ -7,7 +7,7 @@ using VideoConferanceApp.Shared.Meeting.Responses;
 
 namespace VideoConferanceApp.Server.Features.Meeting.CreateMeeting.Handler;
 
-public class CreateMeetingHandler(AppDbContext context, IConfiguration config, ITwilioService twilioService)
+public class CreateMeetingHandler(AppDbContext context, IConfiguration config, IVideoService twilioService)
     : IRequestHandler<CreateMeetingCommand, CreateMeetingResponse>
 {
     public async Task<CreateMeetingResponse> Handle(CreateMeetingCommand request, CancellationToken cancellationToken)

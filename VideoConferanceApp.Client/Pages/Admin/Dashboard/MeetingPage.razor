@@ -11,6 +11,7 @@
 @using NetcodeHub.Packages.Components.ScreenLoader
 @layout DashboardLayout
 @implements IAsyncDisposable
+@inject IJSRuntime _js
 
 <div class="row" style="opacity:@PageOpacity">
     <div class="co-lg-12 card border-0">
@@ -111,6 +112,19 @@
             .WithUrl($"{baseAddress}/meetinghub", option => { option.AccessTokenProvider = () => Task.FromResult(jwtToken)!; }).WithAutomaticReconnect().Build();
 
 
+        // WebRTC signaling event handlers
+        _hubConnection.On<string[]>("ReceiveExistingParticipants", async ids =>
+            await _js.InvokeVoidAsync("window.twilioVideo.receiveExistingParticipants", ids));
+
+        _hubConnection.On<string, string>("ReceiveOffer", async (fromId, sdp) =>
+            await _js.InvokeVoidAsync("window.twilioVideo.handleOffer", fromId, sdp));
+
+        _hubConnection.On<string, string>("ReceiveAnswer", async (fromId, sdp) =>
+            await _js.InvokeVoidAsync("window.twilioVideo.handleAnswer", fromId, sdp));
+
+        _hubConnection.On<string, string>("ReceiveIceCandidate", async (fromId, candidate) =>
+            await _js.InvokeVoidAsync("window.twilioVideo.handleIceCandidate", fromId, candidate));
+
         _hubConnection.On("GetConnectedUsers", async () =>
         {
             Console.WriteLine("Get Connected User Event fired");
@@ -170,7 +184,11 @@
             }
         }
 
-        // Start twilio meeting
+        // Setup WebRTC signaling (pass DotNet reference to JS before joining)
+        await _js.InvokeVoidAsync("window.twilioVideo.setupSignaling",
+            DotNetObjectReference.Create(this));
+
+        // Start local media (attendees will offer to host via WebRTC)
         await twilioService
             .JoinMeeting(token: response.Data!, roomName: MeetingId, containerId: ContainerId);
         ShowLoader = false;
@@ -206,6 +224,18 @@
         await Task.Delay(500);
         NavManager.NavigateTo("/dashboard");
     }
+
+    [JSInvokable]
+    public async Task SendOffer(string targetId, string sdp) =>
+        await _hubConnection!.SendAsync("SendOffer", targetId, sdp);
+
+    [JSInvokable]
+    public async Task SendAnswer(string targetId, string sdp) =>
+        await _hubConnection!.SendAsync("SendAnswer", targetId, sdp);
+
+    [JSInvokable]
+    public async Task SendIceCandidate(string targetId, string candidate) =>
+        await _hubConnection!.SendAsync("SendIceCandidate", targetId, candidate);
 
     public async ValueTask DisposeAsync()
     {

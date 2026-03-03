@@ -11,6 +11,7 @@
 @using Size20 = Microsoft.FluentUI.AspNetCore.Components.Icons.Filled.Size20
 @layout AttendeeLayout
 @implements IAsyncDisposable
+@inject IJSRuntime _js
 
 <div class="row" style="opacity:@PageOpacity">
     <div class="co-lg-12 card border-0">
@@ -154,6 +155,19 @@
         _hubConnection.On<string>("Connected", (connectionId) => { MyConnectionId = connectionId; });
 
 
+        // WebRTC signaling event handlers
+        _hubConnection.On<string[]>("ReceiveExistingParticipants", async ids =>
+            await _js.InvokeVoidAsync("window.twilioVideo.receiveExistingParticipants", ids));
+
+        _hubConnection.On<string, string>("ReceiveOffer", async (fromId, sdp) =>
+            await _js.InvokeVoidAsync("window.twilioVideo.handleOffer", fromId, sdp));
+
+        _hubConnection.On<string, string>("ReceiveAnswer", async (fromId, sdp) =>
+            await _js.InvokeVoidAsync("window.twilioVideo.handleAnswer", fromId, sdp));
+
+        _hubConnection.On<string, string>("ReceiveIceCandidate", async (fromId, candidate) =>
+            await _js.InvokeVoidAsync("window.twilioVideo.handleIceCandidate", fromId, candidate));
+
         // get connected users
         _hubConnection.On("GetConnectedUsers", async () =>
         {
@@ -251,11 +265,14 @@
 
         try
         {
-            // join meeting table with signalR and them notify all clients that new member connected
+            // Setup WebRTC signaling (pass DotNet reference to JS before joining)
+            await _js.InvokeVoidAsync("window.twilioVideo.setupSignaling",
+                DotNetObjectReference.Create(this));
+
+            // join meeting table with signalR and notify all clients that new member connected
             await _hubConnection!.SendAsync("JoinMeeting", MeetingId, userId, MeetingPasscode);
 
-
-            // join twilio meeting with token
+            // start local media and wait for ReceiveExistingParticipants to trigger WebRTC
             await twilioService
                 .JoinMeeting(response.Data!, MeetingId, ContainerId);
 
@@ -282,6 +299,18 @@
         await twilioService.LeaveMeeting(ContainerId);
         NavManager.NavigateTo("/meeting-status");
     }
+
+    [JSInvokable]
+    public async Task SendOffer(string targetId, string sdp) =>
+        await _hubConnection!.SendAsync("SendOffer", targetId, sdp);
+
+    [JSInvokable]
+    public async Task SendAnswer(string targetId, string sdp) =>
+        await _hubConnection!.SendAsync("SendAnswer", targetId, sdp);
+
+    [JSInvokable]
+    public async Task SendIceCandidate(string targetId, string candidate) =>
+        await _hubConnection!.SendAsync("SendIceCandidate", targetId, candidate);
 
     public async ValueTask DisposeAsync()
     {

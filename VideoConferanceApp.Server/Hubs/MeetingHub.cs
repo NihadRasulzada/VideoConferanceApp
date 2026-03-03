@@ -88,8 +88,29 @@ public class MeetingHub(
         });
 
         var userConnectionIds = await getUsersConnectionIdsByMeetingId.Handle(meetingId);
+
+        // Send existing participants' connection IDs to the new joiner for WebRTC signaling
+        var existingIds = userConnectionIds
+            .Where(id => id != Context.ConnectionId)
+            .ToArray();
+        await Clients.Client(Context.ConnectionId)
+            .SendAsync("ReceiveExistingParticipants", existingIds);
+
         IReadOnlyList<string> userIds = [.. userConnectionIds];
         await Clients.Clients(userIds).SendAsync("GetConnectedUsers");
         return;
     }
+
+    // WebRTC signaling relay methods
+    public async Task SendOffer(string targetConnectionId, string sdp) =>
+        await Clients.Client(targetConnectionId)
+            .SendAsync("ReceiveOffer", Context.ConnectionId, sdp);
+
+    public async Task SendAnswer(string targetConnectionId, string sdp) =>
+        await Clients.Client(targetConnectionId)
+            .SendAsync("ReceiveAnswer", Context.ConnectionId, sdp);
+
+    public async Task SendIceCandidate(string targetConnectionId, string candidate) =>
+        await Clients.Client(targetConnectionId)
+            .SendAsync("ReceiveIceCandidate", Context.ConnectionId, candidate);
 }

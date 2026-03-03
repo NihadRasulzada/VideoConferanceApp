@@ -11,7 +11,7 @@ namespace VideoConferanceApp.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class TwilioController(
-        ITwilioService twilioService,
+        IVideoService videoService,
         IHubContext<MeetingHub> hubContext,
         IGetUsersConnectionIdsByMeetingIdHelper getUsersConnectionIdsByMeetingId) : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace VideoConferanceApp.Server.Controllers
         public ActionResult<TwilioServiceResponse>
             GetMeetingToken(string username, string meetingId)
         {
-            TwilioServiceResponse response = twilioService
+            TwilioServiceResponse response = videoService
                 .GenerateMeetingToken(username, meetingId);
             return response.IsSuccess ? Ok(response) : BadRequest(response);
         }
@@ -32,14 +32,14 @@ namespace VideoConferanceApp.Server.Controllers
         {
             // first check if meeting room exist at all
             TwilioServiceResponse getRoomNameResponse =
-                twilioService.GetRoomByName(meetingId);
+                await videoService.GetRoomByName(meetingId);
 
             if (!getRoomNameResponse.IsSuccess)
                 return NotFound(getRoomNameResponse);
 
             // end meeting
             TwilioServiceResponse endMeetingResponse =
-                twilioService.EndMeeting(getRoomNameResponse.Data!);
+                videoService.EndMeeting(getRoomNameResponse.Data!);
 
             if (!endMeetingResponse.IsSuccess)
                 return BadRequest(endMeetingResponse);

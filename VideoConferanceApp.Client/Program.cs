@@ -29,7 +29,7 @@ builder.Services.AddHttpClient(clientName, options =>
 }).AddHttpMessageHandler<HttpDelegate>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITwilioService, TwilioService>();
+builder.Services.AddScoped<IVideoService, VideoService>();
 builder.Services.AddScoped<IMeetingService, MeetingService>();
 
 builder.Services.AddScoped<IHttpExtension, HttpExtension>();
